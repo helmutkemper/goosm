@@ -13,3 +13,12 @@
 
 # Dependency directories (remove the comment below to include it)
 # vendor/
+
+# Mongodb no ephemeral data
+docker/mongodb/data/
+
+# Temporary files
+*.tmp
+
+# Binary open street map file
+*.pbf
