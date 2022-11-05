@@ -7,8 +7,9 @@ import (
 	"goosm/businessRules/toModule/uID"
 	"goosm/goosm"
 	"goosm/module/interfaces"
-	mongodbosm "goosm/plugin/osm.mongodb"
+	mongodbosm "goosm/plugin/mongodb"
 	"plugin"
+	"time"
 )
 
 type RefList struct {
@@ -45,7 +46,8 @@ func (e *RefList) Init(name Name) (err error) {
 		return
 	}
 
-	e.Osm = &mongodbosm.MongoDbOsm{}
+	e.Osm = &mongodbosm.Osm{}
+	e.Osm.SetTimeout(20 * time.Second) //fixme
 	_, err = e.Osm.New()
 
 	// Inicializa o banco de dados

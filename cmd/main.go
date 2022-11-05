@@ -125,7 +125,7 @@ func main() {
 	// "./node.sul.tmp.bin" - id 10073799145
 	//2022/11/02 13:00:55 main.go:129: tempo: 28m19.893329292s
 	// 9m49.515609375s - total: 45248630
-	total, err = binarySearch.CompleteParser("./sul-latest.osm.pbf")
+	_, total, err = binarySearch.CompleteParser("./sul-latest.osm.pbf")
 	//total, err = binarySearch.SaveNodesIntoTmpFile("./sul-latest.osm.pbf")
 	log.Printf("%v - total: %v", time.Since(start), total)
 	if err != nil {

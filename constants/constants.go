@@ -1,10 +1,10 @@
 package constants
 
 const (
-	KMongoDBDatabase             = "osm"
-	KMongoDBCollectionNode       = "node"
-	KMongoDBCollectionWay        = "way"
-	KMongoDBCollectionCollection = "collection"
+	KMongoDBDatabase           = "osm"
+	KMongoDBCollectionNode     = "node"
+	KMongoDBCollectionWrongWay = "wrongWay"
+	KMongoDBCollectionWay      = "way"
 )
 
 const (

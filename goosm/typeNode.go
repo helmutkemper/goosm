@@ -18,11 +18,11 @@ import (
 //
 // Node do open street maps
 type Node struct {
-	Common `bson:"-"`
+	Common
 
 	// English: Open street maps ID
 	// Português: ID do open street maps
-	Id int64 `bson:"_id"`
+	Id int64
 
 	// English: Map ready geolocation array (0:x:longitude,1:y:latitude)
 	// Português: Array de localização geográfica pronto para o mapa (0:x:longitude,1:y:latitude)

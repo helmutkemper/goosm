@@ -5,7 +5,6 @@ import (
 	datasource "goosm/businessRules/dataSource"
 	"goosm/compress"
 	"goosm/goosm"
-	downloadApiV06 "goosm/goosm/download"
 	"io"
 	"io/fs"
 	"log"
@@ -13,6 +12,8 @@ import (
 	"os"
 	"time"
 )
+
+// Tempo total: 1h7m30.206547875s
 
 func main() {
 
@@ -49,14 +50,9 @@ func main() {
 	// Português: determina a interface de banco de dados
 	binarySearch.SetDatabase(datasource.Linker.Osm)
 
-	// English: determines the download interface for when a point is not found in the file
-	// Português: determina a interface de download para quando um ponto não é encontrado no arquivo
-	binarySearch.SetDownloadApi(&downloadApiV06.DownloadApiV06{})
-
 	// English: determines the maximum database response time to do 100 simultaneous inserts
 	// Português: determina o tempo máximo de resposta do banco de dados para fazer 100 inserções simultâneas
 	binarySearch.SetDatabaseTimeout(10 * 60 * time.Second)
-	binarySearch.SetCompress(compressData)
 
 	parcialReportTicker := time.NewTicker(terminalInterval)
 	go func() {
@@ -81,7 +77,7 @@ func main() {
 	//   and database for ways, 7.9 trillion of points greatly increases the computational cost.
 	// Português: processa o arquivo. embora a responsabilidade única peça que sejam três funções, busca binária, banco de
 	//   dados para nodes e banco de dados para ways, 7.9 trilhões de pontos elevam muito o custo computacional.
-	_, _, err = binarySearch.CompleteParser("./sul-latest.osm.pbf")
+	err = binarySearch.WrongWayParser("./sul-latest.osm.pbf", "./insertionTime.csv")
 	log.Printf("time total: %v", time.Since(start))
 	if err != nil {
 		panic(err)

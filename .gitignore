@@ -22,3 +22,6 @@ docker/mongodb/data/
 
 # Binary open street map file
 *.pbf
+
+# CSV files
+*.csv

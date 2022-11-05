@@ -1,4 +1,4 @@
-package mongodbosm
+package mongodb
 
 import (
 	"context"
@@ -14,37 +14,46 @@ import (
 	"time"
 )
 
-type MongoDbOsm struct {
-	Client           *mongo.Client
-	Ctx              context.Context
-	CancelFunc       context.CancelFunc
-	ClientNode       *mongo.Collection
-	ClientWay        *mongo.Collection
-	ClientCollection *mongo.Collection
+type Osm struct {
+	timeout        time.Duration
+	Client         *mongo.Client
+	CancelFunc     context.CancelFunc
+	ClientNode     *mongo.Collection
+	ClientWrongWay *mongo.Collection
+	ClientWay      *mongo.Collection
 }
 
-func (e *MongoDbOsm) Connect(connectionString string, args ...interface{}) (err error) {
+func (e *Osm) SetTimeout(timeout time.Duration) {
+	e.timeout = timeout
+}
+
+func (e *Osm) Connect(connectionString string, _ ...interface{}) (err error) {
 	e.Client, err = mongo.NewClient(options.Client().ApplyURI(connectionString))
 	if err != nil {
 		return
 	}
 
-	e.Ctx = context.Background()
-	err = e.Client.Connect(e.Ctx)
+	ctx, cancel := context.WithTimeout(context.Background(), e.timeout)
+	err = e.Client.Connect(ctx)
+	cancel()
 	if err != nil {
 		return
 	}
 
-	err = e.Client.Ping(e.Ctx, readpref.Primary())
+	ctx, cancel = context.WithTimeout(context.Background(), e.timeout)
+	err = e.Client.Ping(ctx, readpref.Primary())
+	cancel()
 	return
 }
 
-func (e *MongoDbOsm) Close() (err error) {
-	err = e.Client.Disconnect(e.Ctx)
+func (e *Osm) Close() (err error) {
+	ctx, cancel := context.WithTimeout(context.Background(), e.timeout)
+	err = e.Client.Disconnect(ctx)
+	cancel()
 	return
 }
 
-func (e *MongoDbOsm) New() (referenceInitialized interface{}, err error) {
+func (e *Osm) New() (referenceInitialized interface{}, err error) {
 	if err = e.Connect(constants.KMongoDBConnectionString); err != nil {
 		return
 	}
@@ -57,62 +66,67 @@ func (e *MongoDbOsm) New() (referenceInitialized interface{}, err error) {
 		return
 	}
 
-	if err = e.createTableCollection(); err != nil {
+	if err = e.createTableWrongWay(); err != nil {
 		return
 	}
 
 	return e, err
 }
 
-func (e *MongoDbOsm) SetNode(nodeList *[]goosm.Node) (err error) {
+func (e *Osm) SetNodeOne(node *goosm.Node) (err error) {
+	var nodeDb = Node{}
+	nodeDb.ToDbNode(node)
 
-	var listToInsert = make([]interface{}, len(*nodeList))
-	var listToDelete = make([]int64, len(*nodeList))
-	for key, node := range *nodeList {
-		listToDelete[key] = node.Id
-		listToInsert[key] = node
-	}
-
-	_, _ = e.ClientNode.DeleteMany(context.Background(), bson.M{"_id": bson.M{"$in": listToDelete}})
-
-	_, err = e.ClientNode.InsertMany(context.Background(), listToInsert)
+	ctx, cancel := context.WithTimeout(context.Background(), e.timeout)
+	_, err = e.ClientNode.InsertOne(ctx, nodeDb)
+	cancel()
 	return
 }
 
-func (e *MongoDbOsm) findIdInList(id int64, idList *[]int64) (found bool) {
-	for k := range *idList {
-		if (*idList)[k] == id {
-			return true
-		}
+func (e *Osm) SetNodeMany(list *[]goosm.Node) (err error) {
+	nodeDb := Node{}
+	var listDb = make([]interface{}, len(*list))
+	for key, node := range *list {
+		nodeDb.ToDbNode(&node)
+		listDb[key] = nodeDb
 	}
 
-	return false
+	ctx, cancel := context.WithTimeout(context.Background(), e.timeout)
+	_, err = e.ClientNode.InsertMany(ctx, listDb)
+	cancel()
+	return
 }
 
-func (e *MongoDbOsm) GetNodeById(id int64) (node goosm.Node, err error) {
-	var cursor *mongo.Cursor
-	var nodeSlice []goosm.Node
+func (e *Osm) SetWrongWayNodeMany(list *[]goosm.Node) (err error) {
+	nodeDb := Node{}
+	var listDb = make([]interface{}, len(*list))
+	for key, node := range *list {
+		nodeDb.ToDbNode(&node)
+		listDb[key] = nodeDb
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), e.timeout)
+	_, err = e.ClientWrongWay.InsertMany(ctx, listDb)
+	cancel()
+	return
+}
+
+func (e *Osm) GetNodeById(id int64) (node goosm.Node, err error) {
+	var nodeDb Node
 	e.ClientNode = e.Client.Database(constants.KMongoDBDatabase).Collection(constants.KMongoDBCollectionNode)
 
-	node = goosm.Node{Id: id}
-	cursor, err = e.ClientNode.Find(e.Ctx, bson.M{"_id": id})
+	ctx, cancel := context.WithTimeout(context.Background(), e.timeout)
+	err = e.ClientNode.FindOne(ctx, bson.M{"_id": id}).Decode(&nodeDb)
+	cancel()
 	if err != nil {
 		return
 	}
 
-	err = cursor.All(e.Ctx, &nodeSlice)
-	if err != nil {
-		return
-	}
-
-	if len(nodeSlice) != 0 {
-		node = nodeSlice[0]
-	}
-
+	node = nodeDb.Node()
 	return
 }
 
-func (e *MongoDbOsm) wayJoinLast(loc [2]float64, timeout time.Duration, idListGarbage *[]int64, name string) (way Way, err error) {
+func (e *Osm) wayJoinLast(loc [2]float64, timeout time.Duration, idListGarbage *[]int64, name string) (way Way, err error) {
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	err = e.ClientWay.FindOne(ctx, bson.M{"tag.name": name, "_id": bson.M{"$nin": *idListGarbage}, "$or": []bson.M{{"locFirst": loc}, {"locLast": loc}}}).Decode(&way)
 	cancel()
@@ -128,7 +142,7 @@ func (e *MongoDbOsm) wayJoinLast(loc [2]float64, timeout time.Duration, idListGa
 	return
 }
 
-func (e *MongoDbOsm) wayJoinTag(loc [2]float64, key string, value interface{}, timeout time.Duration, idListGarbage *[]int64, name string) (way Way, err error) {
+func (e *Osm) wayJoinTag(loc [2]float64, key string, value interface{}, timeout time.Duration, idListGarbage *[]int64, name string) (way Way, err error) {
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 
 	query := bson.M{"$and": []bson.M{{key: value}, {"_id": bson.M{"$nin": *idListGarbage}}, {"$or": []bson.M{{"locFirst": loc}, {"locLast": loc}}}}}
@@ -226,7 +240,7 @@ func Mean(input Float64Data) (float64, error) {
 	return sum / float64(input.Len()), nil
 }
 
-func (e *MongoDbOsm) angle(a float64) float64 {
+func (e *Osm) angle(a float64) float64 {
 	if a >= 180 {
 		a -= 180
 	}
@@ -261,7 +275,7 @@ func (e *MongoDbOsm) angle(a float64) float64 {
 //	  distanceMeters: distância total em metros (bifurcações são contadas);
 //	  features: lista de geojson features;
 //	  err: objeto padrão de erro do golang.
-func (e *MongoDbOsm) WayJoinGeoJSonFeatures(id int64, timeout time.Duration) (distanceMeters float64, features string, err error) {
+func (e *Osm) WayJoinGeoJSonFeatures(id int64, timeout time.Duration) (distanceMeters float64, features string, err error) {
 	var idList = make([]int64, 0)
 	var idListGarbage = make([]int64, 0)
 	var name string
@@ -323,7 +337,7 @@ func (e *MongoDbOsm) WayJoinGeoJSonFeatures(id int64, timeout time.Duration) (di
 	return
 }
 
-func (e *MongoDbOsm) WayJoinQueryGeoJSonFeatures(query interface{}, timeout time.Duration) (distanceMeters float64, features string, err error) {
+func (e *Osm) WayJoinQueryGeoJSonFeatures(query interface{}, timeout time.Duration) (distanceMeters float64, features string, err error) {
 	var cursor *mongo.Cursor
 	var dbWay Way
 
@@ -475,7 +489,22 @@ func (e *MongoDbOsm) WayJoinQueryGeoJSonFeatures(query interface{}, timeout time
 //	return
 //}
 
-func (e *MongoDbOsm) GetWay(id int64, timeout time.Duration) (way goosm.Way, err error) {
+func (e *Osm) GetWayById(id int64) (way goosm.Way, err error) {
+	var tmpWay Way
+
+	ctx, cancel := context.WithTimeout(context.Background(), e.timeout)
+	defer cancel()
+
+	err = e.ClientWay.FindOne(ctx, bson.M{"_id": id}).Decode(&tmpWay)
+	if err != nil {
+		return
+	}
+
+	way = tmpWay.Way()
+	return
+}
+
+func (e *Osm) GetWay(id int64, timeout time.Duration) (way goosm.Way, err error) {
 	var tmpWay Way
 
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
@@ -490,7 +519,7 @@ func (e *MongoDbOsm) GetWay(id int64, timeout time.Duration) (way goosm.Way, err
 	return
 }
 
-func (e *MongoDbOsm) SetWay(wayList *[]goosm.Way, timeout time.Duration) (err error) {
+func (e *Osm) SetWay(wayList *[]goosm.Way, timeout time.Duration) (err error) {
 
 	var tmpWay Way
 	var listToInsert = make([]interface{}, len(*wayList))
@@ -511,7 +540,7 @@ func (e *MongoDbOsm) SetWay(wayList *[]goosm.Way, timeout time.Duration) (err er
 	return
 }
 
-func (e *MongoDbOsm) createTableNode() (err error) {
+func (e *Osm) createTableNode() (err error) {
 	e.ClientNode = e.Client.Database(constants.KMongoDBDatabase).Collection(constants.KMongoDBCollectionNode)
 
 	indexes := e.ClientNode.Indexes()
@@ -569,7 +598,65 @@ func (e *MongoDbOsm) createTableNode() (err error) {
 	return
 }
 
-func (e *MongoDbOsm) createTableWay() (err error) {
+func (e *Osm) createTableWrongWay() (err error) {
+	e.ClientWrongWay = e.Client.Database(constants.KMongoDBDatabase).Collection(constants.KMongoDBCollectionWrongWay)
+
+	indexes := e.ClientWrongWay.Indexes()
+
+	var cursor *mongo.Cursor
+	cursor, err = indexes.List(context.Background())
+	if err != nil {
+		return
+	}
+
+	results := make([]bson.M, 0)
+	err = cursor.All(context.Background(), &results)
+	if err != nil {
+		return
+	}
+
+	pass := false
+	for _, result := range results {
+		if result["name"] == "__loc__" {
+			pass = true
+			break
+		}
+	}
+
+	if !pass {
+		name := "__loc__"
+		_, err = indexes.CreateOne(
+			context.Background(),
+			mongo.IndexModel{
+				Keys: bson.M{"loc": "2dsphere"},
+				Options: &options.IndexOptions{
+					Name: &name,
+				},
+			},
+		)
+		if err != nil {
+			return
+		}
+
+		name = "__tags__"
+		_, err = indexes.CreateOne(
+			context.Background(),
+			mongo.IndexModel{
+				Keys: bson.M{"tag": 1},
+				Options: &options.IndexOptions{
+					Name: &name,
+				},
+			},
+		)
+		if err != nil {
+			return
+		}
+	}
+
+	return
+}
+
+func (e *Osm) createTableWay() (err error) {
 	e.ClientWay = e.Client.Database(constants.KMongoDBDatabase).Collection(constants.KMongoDBCollectionWay)
 
 	indexes := e.ClientWay.Indexes()
@@ -666,11 +753,6 @@ func (e *MongoDbOsm) createTableWay() (err error) {
 		}
 	}
 
-	return
-}
-
-func (e *MongoDbOsm) createTableCollection() (err error) {
-	e.ClientCollection = e.Client.Database(constants.KMongoDBDatabase).Collection(constants.KMongoDBCollectionCollection)
 	return
 }
 

@@ -13,6 +13,7 @@ import (
 	"os"
 	"runtime"
 	"sort"
+	"strconv"
 	"time"
 )
 
@@ -207,14 +208,18 @@ type InterfaceDownloadOsm interface {
 }
 
 type InterfaceDatabase interface {
+	SetTimeout(timeout time.Duration)
 	Connect(connectionString string, args ...interface{}) (err error)
 	Close() (err error)
 	New() (referenceInitialized interface{}, err error)
-	SetNode(nodeList *[]Node) (err error)
+	SetNodeOne(node *Node) (err error)
+	SetNodeMany(list *[]Node) (err error)
+	SetWrongWayNodeMany(list *[]Node) (err error)
 	GetNodeById(id int64) (node Node, err error)
 
 	SetWay(wayList *[]Way, timeout time.Duration) (err error)
-	GetWay(id int64, timeout time.Duration) (way Way, err error)
+	//GetWay(id int64, timeout time.Duration) (way Way, err error)
+	GetWayById(id int64) (way Way, err error)
 	//WayJoin(id int64, timeout time.Duration) (way Way, err error)
 
 	// WayJoinGeoJSonFeatures
@@ -567,7 +572,7 @@ func (e *PbfProcess) NodesToDatabase(osmFilePath string) (err error) {
 
 						nodeList = append(nodeList, node)
 						if len(nodeList) == 100 {
-							err = e.database.SetNode(&nodeList)
+							err = e.database.SetNodeMany(&nodeList)
 							if err != nil {
 								return
 							}
@@ -580,7 +585,7 @@ func (e *PbfProcess) NodesToDatabase(osmFilePath string) (err error) {
 			case *osmpbf.Way:
 
 				if nodeList != nil && len(nodeList) != 0 {
-					err = e.database.SetNode(&nodeList)
+					err = e.database.SetNodeMany(&nodeList)
 					if err != nil {
 						return
 					}
@@ -953,7 +958,7 @@ func (e *PbfProcess) CompleteParser(osmFilePath string) (nodes, ways uint64, err
 
 						nodeList = append(nodeList, node)
 						if len(nodeList) == 100 {
-							err = e.database.SetNode(&nodeList)
+							err = e.database.SetNodeMany(&nodeList)
 							if err != nil {
 								return
 							}
@@ -994,7 +999,7 @@ func (e *PbfProcess) CompleteParser(osmFilePath string) (nodes, ways uint64, err
 				}
 
 				if nodeList != nil && len(nodeList) != 0 {
-					err = e.database.SetNode(&nodeList)
+					err = e.database.SetNodeMany(&nodeList)
 					if err != nil {
 						return
 					}
@@ -1067,6 +1072,111 @@ func (e *PbfProcess) CompleteParser(osmFilePath string) (nodes, ways uint64, err
 
 	ways = e.totalOfWaysInTmpFile
 	nodes = e.totalOfNodesInTmpFile
+	return
+}
+
+func (e *PbfProcess) WrongWayParser(osmFilePath, timeLogPath string) (err error) {
+
+	if e.database == nil {
+		err = errors.New("PbfProcess.CompleteParser().error: the database object must be defined before this function is called")
+		return
+	}
+
+	e.totalOfNodesInTmpFile = 0
+	e.totalOfWaysInTmpFile = 0
+
+	var timeLog *os.File
+	timeLog, err = os.OpenFile(timeLogPath, os.O_CREATE|os.O_WRONLY, fs.ModePerm)
+	if err != nil {
+		err = fmt.Errorf("PbfProcess.CompleteParser().Open(timeLog).Error: %v", err)
+		return
+	}
+
+	var osmFile *os.File
+	osmFile, err = os.Open(osmFilePath)
+	if err != nil {
+		err = fmt.Errorf("PbfProcess.CompleteParser().Open(osm).Error: %v", err)
+		return
+	}
+
+	defer func() {
+		err := osmFile.Close()
+		if err != nil {
+			log.Printf("error closing main osm source file: %v", err.Error())
+		}
+	}()
+
+	osmDecoder := osmpbf.NewDecoder(osmFile)
+
+	// use more memory from the start, it is faster
+	osmDecoder.SetBufferSize(osmpbf.MaxBlobSize)
+
+	// start decoding with several goroutines, it is faster
+	err = osmDecoder.Start(runtime.GOMAXPROCS(-1))
+	if err != nil {
+		err = fmt.Errorf("PbfProcess.CompleteParser().Start().Error: %v", err)
+		return
+	}
+
+	nodeList := make([]Node, 0)
+	node := Node{}
+
+	for {
+		var osmPbfElement interface{}
+		if osmPbfElement, err = osmDecoder.Decode(); err == io.EOF {
+			err = nil
+			break
+		} else if err != nil {
+			err = fmt.Errorf("PbfProcess.CompleteParser().Decode().Error: %v", err)
+			return
+		} else {
+			switch converted := osmPbfElement.(type) {
+			case *osmpbf.Node:
+
+				e.totalOfNodesInTmpFile++
+
+				node.Init(converted.ID, converted.Lon, converted.Lat, &converted.Tags)
+				nodeList = append(nodeList, node)
+				if len(nodeList) == 100 {
+					start := time.Now()
+					err = e.database.SetWrongWayNodeMany(&nodeList)
+					if err != nil {
+						err = fmt.Errorf("WrongWayParser().error: the function Osm.SetNodeMany() returned an error: %v", err)
+						return
+					}
+					duration := time.Since(start)
+					_, err = timeLog.WriteString(strconv.FormatInt(int64(e.totalOfNodesInTmpFile), 10))
+					if err != nil {
+						err = fmt.Errorf("WrongWayParser().error: the function timeLog.WriteString() returned an error: %v", err)
+						return
+					}
+					_, err = timeLog.WriteString(",")
+					if err != nil {
+						err = fmt.Errorf("WrongWayParser().error: the function timeLog.WriteString() returned an error: %v", err)
+						return
+					}
+					_, err = timeLog.WriteString(strconv.FormatInt(duration.Microseconds(), 10) + "\r\n")
+					if err != nil {
+						err = fmt.Errorf("WrongWayParser().error: the function timeLog.WriteString() returned an error: %v", err)
+						return
+					}
+
+					nodeList = make([]Node, 0)
+				}
+
+			case *osmpbf.Way:
+				return
+
+			case *osmpbf.Relation:
+				return
+
+			default:
+				err = errors.New("PbfProcess.CompleteParser().error: formato de dado não previsto no arquivo pbf do open street maps")
+				return
+			}
+		}
+	}
+
 	return
 }
 
