@@ -48,8 +48,8 @@ mostraram os seguintes desempenhos:
 | total process | Memory Allocs     | Type of golang data                          |
 |---------------|-------------------|----------------------------------------------|
 |  3.830812750s | 1511656176 Allocs | []byte using binary.LittleEndian.PutUint64() |
-| 23.104297458s | 4426114960 Allocs | map[id][]float64{longitude, latitude}        |
 | 13.403035416s | 2413071824 Allocs | map[id][2]float64{longitude, latitude}       |
+| 23.104297458s | 4426114960 Allocs | map[id][]float64{longitude, latitude}        |
 
 Porém, uma busca binária simples, com 7.9 trilhões de IDs ainda seria mais demorada do que o necessário, por isto, ao
 final do arquivo, são salvos amostras de IDs para uma segunda busca binária em memória, onde a busca retorna dois 
@@ -68,8 +68,26 @@ prepara os nodes e ways para serem usados na forma de [GeoJSon](https://geojson.
 
 [MongoDB](https://www.mongodb.com/docs/manual/installation/) instalado na porta 27016 com o banco `osm` livre para uso.
 
+> Há um exemplo de como instalar o `MongoDB` de forma simples, com a ajuda do `docker`
+
 #### Como usar este exemplo:
 
 ```shell
   make build
 ```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
