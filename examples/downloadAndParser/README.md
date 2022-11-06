@@ -53,7 +53,27 @@ mostraram os seguintes desempenhos:
 
 Porém, uma busca binária simples, com 7.9 trilhões de IDs ainda seria mais demorada do que o necessário, por isto, ao
 final do arquivo, são salvos amostras de IDs para uma segunda busca binária em memória, onde a busca retorna dois 
-endereços, a borda esquerda e a borda direita de onde o ID procurado se encontra no arquivo binário.
+endereços, a borda esquerda e a borda direita de onde o ID procurado se encontra no arquivo binário, assim, a busca é
+sempre limitada a um bloco de tamanho fixo, definido na criação do arquivo binário.
+
+```go
+// headers:
+// ...
+// dados:
+// ID:1
+// ID:2
+// ...
+// ...
+// ID:1024
+// ID:1025
+// ...
+// ...
+// ID:x
+// Índices:
+// ID:0001:Addr:00040 --+
+// ID:1025:Addr:18490   +- busca binária em memória
+// ID:2049:Addr:32824 --+
+```
 
 ### Resultado
 
