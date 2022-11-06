@@ -37,7 +37,7 @@ func main() {
 	// English: Defines the object database for nodes
 	// Português: Define o objeto de banco de dados para nodes
 	dbNode := &mongodb.DbNode{}
-	_, err = dbNode.New("mongodb://127.0.0.1:27016/", "osm2", "node", timeout)
+	_, err = dbNode.New("mongodb://127.0.0.1:27016/", "osm", "node", timeout)
 	if err != nil {
 		panic(err)
 	}
@@ -45,7 +45,7 @@ func main() {
 	// English: Defines the object database for nodes
 	// Português: Define o objeto de banco de dados para nodes
 	dbWay := &mongodb.DbWay{}
-	_, err = dbWay.New("mongodb://127.0.0.1:27016/", "osm2", "way", timeout)
+	_, err = dbWay.New("mongodb://127.0.0.1:27016/", "osm", "way", timeout)
 	if err != nil {
 		panic(err)
 	}
