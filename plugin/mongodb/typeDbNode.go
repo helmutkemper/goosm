@@ -199,7 +199,7 @@ func (e *DbNode) GetById(id int64) (node goosm.Node, err error) { //nolint:typec
 		return
 	}
 
-	node = nodeDb.Node()
+	node = nodeDb.ToOsmNode()
 	return
 }
 

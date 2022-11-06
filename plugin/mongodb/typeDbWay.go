@@ -199,7 +199,7 @@ func (e *DbWay) GetById(id int64) (way goosm.Way, err error) {
 		return
 	}
 
-	way = wayDb.Way()
+	way = wayDb.ToOsmWay()
 	return
 }
 

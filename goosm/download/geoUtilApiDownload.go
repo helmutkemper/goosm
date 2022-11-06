@@ -192,6 +192,15 @@ func (e DownloadApiV06) DownloadWay(id int64) (way goosm.Way, err error) {
 	return
 }
 
+// DownloadRelation
+//
+// English:
+//
+// Downloads the initialized relation for use.
+//
+// Português:
+//
+// Faz o download da relation inicializado para uso.
 func (e DownloadApiV06) DownloadRelation(id int64) (relation goosm.Relation, err error) {
 	//id: 5577786
 	var data []byte

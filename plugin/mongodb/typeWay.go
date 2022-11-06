@@ -14,7 +14,7 @@ type Way struct {
 	GeoJSonFeature string            `bson:"geoJSonFeature,omitempty"`
 }
 
-func (e Way) Way() (way goosm.Way) {
+func (e Way) ToOsmWay() (way goosm.Way) {
 
 	//way.BBox.BottomLeft = e.BBox.BottomLeft.Node()
 	//way.BBox.UpperRight = e.BBox.UpperRight.Node()

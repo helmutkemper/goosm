@@ -16,7 +16,7 @@ type Node struct {
 	GeoJSonFeature string `bson:"geoJSonFeature,omitempty"`
 }
 
-func (e Node) Node() (node goosm.Node) {
+func (e Node) ToOsmNode() (node goosm.Node) {
 	node.Id = e.Id
 	node.Tag = e.Tag
 	node.Loc = e.Loc.Coordinates
