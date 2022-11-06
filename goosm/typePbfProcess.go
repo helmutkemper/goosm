@@ -207,52 +207,188 @@ type InterfaceDownloadOsm interface {
 	DownloadRelation(id int64) (relation Relation, err error)
 }
 
-type InterfaceDatabase interface {
-	SetTimeout(timeout time.Duration)
-	Connect(connectionString string, args ...interface{}) (err error)
-	Close() (err error)
-	New() (referenceInitialized interface{}, err error)
-	SetNodeOne(node *Node) (err error)
-	SetNodeMany(list *[]Node) (err error)
-	SetWrongWayNodeMany(list *[]Node) (err error)
-	GetNodeById(id int64) (node Node, err error)
-
-	SetWay(wayList *[]Way, timeout time.Duration) (err error)
-	//GetWay(id int64, timeout time.Duration) (way Way, err error)
-	GetWayById(id int64) (way Way, err error)
-	//WayJoin(id int64, timeout time.Duration) (way Way, err error)
-
-	// WayJoinGeoJSonFeatures
+type InterfaceConnect interface {
+	// SetTimeout
 	//
 	// English:
 	//
-	// Joins all the forming segments of a way that has the "tag.name" property defined and returns the geoJSon of the same
+	// Determines timeout for all functions
 	//
 	//  Input:
-	//    id: ID of any segment forming the set;
-	//    timeout: timeout of each database request.
-	//
-	//  Output:
-	//    distanceMeters: total distance in meters (forks are counted);
-	//    features: list of geojson features;
-	//    err: golang's default error object.
+	//    timeout: maximum time for operation
 	//
 	// Português:
 	//
-	// Junta todos os seguimentos formadores de um way que tenha a propriedade "tag.name" definida e retorna o geoJSon do
-	// mesmo
+	// Determina o timeout para todas as funções
 	//
 	//  Entrada:
-	//    id: ID de qualquer seguimento formador do conjunto;
-	//    timeout: tempo limit de cada requisição do banco de dados.
+	//    timeout: tempo máximo para a operação
+	SetTimeout(timeout time.Duration)
+
+	// Connect
+	//
+	// English:
+	//
+	// Connect to the database
+	//
+	//  Input:
+	//    connection: database connection string. eg. "mongodb://127.0.0.1:27016/"
+	//    args: maintained by interface compatibility
+	//
+	// Português:
+	//
+	// Conecta ao banco de dados
+	//
+	//  Entrada:
+	//    connection: string de conexão ao banco de dados. Ex: "mongodb://127.0.0.1:27016/"
+	//    args: mantido por compatibilidade da interface
+	Connect(connection string, _ ...interface{}) (err error)
+
+	// Close
+	//
+	// English:
+	//
+	// Close the connection to the database
+	//
+	// Português:
+	//
+	// Fecha a conexão com o banco de dados
+	Close() (err error)
+
+	// New
+	//
+	// English:
+	//
+	// Prepare the database for use
+	//
+	//  Input:
+	//    connection: database connection string. Eg: "mongodb://127.0.0.1:27016/"
+	//    database: database name. Eg. "osm"
+	//    collection: collection name within the database. Eg. "way"
+	//
+	//  Output:
+	//    referenceInitialized: database way object ready to use
+	//    err: golang error object
+	//
+	// Português:
+	//
+	// Prepara o banco de dados para uso
+	//
+	//  Entrada:
+	//    connection: string de conexão ao banco de dados. Ex: "mongodb://127.0.0.1:27016/"
+	//    database: nome do banco de dados. Ex: "osm"
+	//    collection: nome da coleção dentro do banco de dados. Ex: "way"
 	//
 	//  Saída:
-	//    distanceMeters: distância total em metros (bifurcações são contadas);
-	//    features: lista de geojson features;
-	//    err: objeto padrão de erro do golang.
-	WayJoinGeoJSonFeatures(id int64, timeout time.Duration) (distanceMeters float64, features string, err error)
+	//    referenceInitialized: objeto do banco de dados pronto para uso
+	//    err: objeto golang error
+	New(connection, database, collection string) (referenceInitialized interface{}, err error)
+}
 
-	WayJoinQueryGeoJSonFeatures(query interface{}, timeout time.Duration) (distanceMeters float64, features string, err error)
+type InterfaceDbWay interface {
+	// SetOne
+	//
+	// English:
+	//
+	// Insert a single way into the database
+	//
+	//  Input:
+	//    way: reference to object goosm.Way
+	//
+	// Português:
+	//
+	// Insere um único way no banco de dados
+	//
+	//  Entrada:
+	//    way: referencia ao objeto goosm.Way.
+	SetOne(way *Way) (err error)
+
+	// GetById
+	//
+	// English:
+	//
+	// Returns a way according to ID
+	//
+	//  Input:
+	//    id: ID in the Open Street Maps project pattern
+	//
+	// Português:
+	//
+	// Retorna um way de acordo com o ID
+	//
+	//  Entrada:
+	//    id: ID no padrão do projeto Open Street Maps.
+	GetById(id int64) (way Way, err error)
+
+	// SetMany
+	//
+	// English:
+	//
+	// Insert a block of ways into the database
+	//
+	//  Input:
+	//    list: reference to slice with []goosm.Way objects
+	//
+	// Português:
+	//
+	// Insere um bloco de ways no banco de dados
+	//
+	//  Entrada:
+	//    list: referência ao slice com os objetos []goosm.Way
+	SetMany(list *[]Way) (err error)
+}
+
+type InterfaceDbNode interface {
+	// SetOne
+	//
+	// English:
+	//
+	// Insert a single node into the database
+	//
+	//  Input:
+	//    node: reference to object goosm.Node
+	//
+	// Português:
+	//
+	// Insere um único node no banco de dados
+	//
+	//  Entrada:
+	//    node: referencia ao objeto goosm.Node
+	SetOne(node *Node) (err error)
+
+	// GetById
+	//
+	// English:
+	//
+	// Returns a node according to ID
+	//
+	//  Input:
+	//    id: ID in the Open Street Maps project pattern
+	//
+	// Português:
+	//
+	// Retorna um node de acordo com o ID
+	//
+	//  Entrada:
+	//    id: ID no padrão do projeto Open Street Maps
+	GetById(id int64) (node Node, err error)
+
+	// SetMany
+	//
+	// English:
+	//
+	// Insert a block of nodes into the database
+	//
+	//  Input:
+	//    list: reference to slice with []goosm.Node objects
+	//
+	// Português:
+	//
+	// Insere um bloco de nodes no banco de dados
+	//
+	//  Entrada:
+	//    list: referência ao slice com os objetos []goosm.Node
+	SetMany(list *[]Node) (err error)
 }
 
 // PbfProcess

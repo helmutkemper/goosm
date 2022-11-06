@@ -15,12 +15,10 @@ import (
 )
 
 type Osm struct {
-	timeout        time.Duration
-	Client         *mongo.Client
-	CancelFunc     context.CancelFunc
-	ClientNode     *mongo.Collection
-	ClientWrongWay *mongo.Collection
-	ClientWay      *mongo.Collection
+	timeout    time.Duration
+	Client     *mongo.Client
+	CancelFunc context.CancelFunc
+	ClientWay  *mongo.Collection
 }
 
 func (e *Osm) SetTimeout(timeout time.Duration) {
@@ -58,72 +56,11 @@ func (e *Osm) New() (referenceInitialized interface{}, err error) {
 		return
 	}
 
-	if err = e.createTableNode(); err != nil {
-		return
-	}
-
 	if err = e.createTableWay(); err != nil {
 		return
 	}
 
-	if err = e.createTableWrongWay(); err != nil {
-		return
-	}
-
 	return e, err
-}
-
-func (e *Osm) SetNodeOne(node *goosm.Node) (err error) {
-	var nodeDb = Node{}
-	nodeDb.ToDbNode(node)
-
-	ctx, cancel := context.WithTimeout(context.Background(), e.timeout)
-	_, err = e.ClientNode.InsertOne(ctx, nodeDb)
-	cancel()
-	return
-}
-
-func (e *Osm) SetNodeMany(list *[]goosm.Node) (err error) {
-	nodeDb := Node{}
-	var listDb = make([]interface{}, len(*list))
-	for key, node := range *list {
-		nodeDb.ToDbNode(&node)
-		listDb[key] = nodeDb
-	}
-
-	ctx, cancel := context.WithTimeout(context.Background(), e.timeout)
-	_, err = e.ClientNode.InsertMany(ctx, listDb)
-	cancel()
-	return
-}
-
-func (e *Osm) SetWrongWayNodeMany(list *[]goosm.Node) (err error) {
-	nodeDb := Node{}
-	var listDb = make([]interface{}, len(*list))
-	for key, node := range *list {
-		nodeDb.ToDbNode(&node)
-		listDb[key] = nodeDb
-	}
-
-	ctx, cancel := context.WithTimeout(context.Background(), e.timeout)
-	_, err = e.ClientWrongWay.InsertMany(ctx, listDb)
-	cancel()
-	return
-}
-
-func (e *Osm) GetNodeById(id int64) (node goosm.Node, err error) {
-	var nodeDb Node
-	e.ClientNode = e.Client.Database(constants.KMongoDBDatabase).Collection(constants.KMongoDBCollectionNode)
-
-	ctx, cancel := context.WithTimeout(context.Background(), e.timeout)
-	err = e.ClientNode.FindOne(ctx, bson.M{"_id": id}).Decode(&nodeDb)
-	cancel()
-	if err != nil {
-		return
-	}
-
-	node = nodeDb.Node()
-	return
 }
 
 func (e *Osm) wayJoinLast(loc [2]float64, timeout time.Duration, idListGarbage *[]int64, name string) (way Way, err error) {
@@ -536,122 +473,6 @@ func (e *Osm) SetWay(wayList *[]goosm.Way, timeout time.Duration) (err error) {
 	ctx, cancel = context.WithTimeout(context.Background(), timeout)
 	_, err = e.ClientWay.InsertMany(ctx, listToInsert)
 	cancel()
-
-	return
-}
-
-func (e *Osm) createTableNode() (err error) {
-	e.ClientNode = e.Client.Database(constants.KMongoDBDatabase).Collection(constants.KMongoDBCollectionNode)
-
-	indexes := e.ClientNode.Indexes()
-
-	var cursor *mongo.Cursor
-	cursor, err = indexes.List(context.Background())
-	if err != nil {
-		return
-	}
-
-	results := make([]bson.M, 0)
-	err = cursor.All(context.Background(), &results)
-	if err != nil {
-		return
-	}
-
-	pass := false
-	for _, result := range results {
-		if result["name"] == "__loc__" {
-			pass = true
-			break
-		}
-	}
-
-	if !pass {
-		name := "__loc__"
-		_, err = indexes.CreateOne(
-			context.Background(),
-			mongo.IndexModel{
-				Keys: bson.M{"loc": "2dsphere"},
-				Options: &options.IndexOptions{
-					Name: &name,
-				},
-			},
-		)
-		if err != nil {
-			return
-		}
-
-		name = "__tags__"
-		_, err = indexes.CreateOne(
-			context.Background(),
-			mongo.IndexModel{
-				Keys: bson.M{"tag": 1},
-				Options: &options.IndexOptions{
-					Name: &name,
-				},
-			},
-		)
-		if err != nil {
-			return
-		}
-	}
-
-	return
-}
-
-func (e *Osm) createTableWrongWay() (err error) {
-	e.ClientWrongWay = e.Client.Database(constants.KMongoDBDatabase).Collection(constants.KMongoDBCollectionWrongWay)
-
-	indexes := e.ClientWrongWay.Indexes()
-
-	var cursor *mongo.Cursor
-	cursor, err = indexes.List(context.Background())
-	if err != nil {
-		return
-	}
-
-	results := make([]bson.M, 0)
-	err = cursor.All(context.Background(), &results)
-	if err != nil {
-		return
-	}
-
-	pass := false
-	for _, result := range results {
-		if result["name"] == "__loc__" {
-			pass = true
-			break
-		}
-	}
-
-	if !pass {
-		name := "__loc__"
-		_, err = indexes.CreateOne(
-			context.Background(),
-			mongo.IndexModel{
-				Keys: bson.M{"loc": "2dsphere"},
-				Options: &options.IndexOptions{
-					Name: &name,
-				},
-			},
-		)
-		if err != nil {
-			return
-		}
-
-		name = "__tags__"
-		_, err = indexes.CreateOne(
-			context.Background(),
-			mongo.IndexModel{
-				Keys: bson.M{"tag": 1},
-				Options: &options.IndexOptions{
-					Name: &name,
-				},
-			},
-		)
-		if err != nil {
-			return
-		}
-	}
 
 	return
 }

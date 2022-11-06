@@ -30,7 +30,7 @@ func (e Way) Way() (way goosm.Way) {
 	return
 }
 
-func (e *Way) ToDbWay(way goosm.Way) (dbWay Way) {
+func (e *Way) ToDbWay(way *goosm.Way) (dbWay Way) {
 
 	//way.BBox.BottomLeft.MakeGeoJSonFeature()
 	//dbWay.BBox.BottomLeft.Rad = way.BBox.BottomLeft.Rad

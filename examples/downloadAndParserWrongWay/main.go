@@ -13,7 +13,8 @@ import (
 	"time"
 )
 
-// Tempo total: 1h7m30.206547875s
+// 22:27
+// Tempo total: 33m0.474874167s
 
 func main() {
 
@@ -56,15 +57,41 @@ func main() {
 
 	parcialReportTicker := time.NewTicker(terminalInterval)
 	go func() {
+		firstReport := make([]uint64, 0)
+		lastReport := make([]uint64, 0)
+		lastResult := uint64(0)
 		for {
 			select {
 			case <-parcialReportTicker.C:
 				nodes := uint64(0)
-				ways := uint64(0)
-				nodes, ways = binarySearch.GetPartialNumberOfProcessedData()
+				nodes, _ = binarySearch.GetPartialNumberOfProcessedData()
+
+				if len(firstReport) < 10 {
+					firstReport = append(firstReport, nodes-lastResult)
+				}
+
+				lastReport = append(lastReport, nodes-lastResult)
+				if len(lastReport) > 10 {
+					lastReport = lastReport[:10]
+				}
+
+				firstInterval := uint64(0)
+				for k := range firstReport {
+					firstInterval += firstReport[k]
+				}
+				firstInterval = firstInterval / uint64(len(firstReport))
+
+				lastInterval := uint64(0)
+				for k := range lastReport {
+					lastInterval += lastReport[k]
+				}
+				lastInterval = lastInterval / uint64(len(lastReport))
+
 				log.Println("Partial report:")
 				log.Printf("nodes: %v\n", nodes)
-				log.Printf("ways: %v\n\n", ways)
+				log.Printf("diference: %2.2f", float64(lastInterval/firstInterval*100))
+
+				lastResult = nodes
 
 			case <-done:
 				parcialReportTicker.Stop()
