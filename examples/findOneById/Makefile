@@ -6,4 +6,4 @@ GOTESTSUM ?= gotestsum
 ## run the example
 build:
 	@$(GO) mod tidy
-	@$(GO) run goosm/examples/findOneWayById
+	@$(GO) run goosm/examples/findOneById

@@ -164,7 +164,7 @@ func dockerMongoDB(
 
 	// English: defines a text to be searched for in the standard output of the container indicating the end of the installation
 	// define um texto a ser procurado na saída padrão do container indicando o fim da instalação
-	dockerContainer.SetWaitStringWithTimeout(`"msg":"Waiting for connections","attr":{"port":27017`, 20*time.Second)
+	dockerContainer.SetWaitStringWithTimeout(`"msg":"Waiting for connections","attr":{"port":27017`, 60*time.Second)
 
 	// English: initialize the docker control object
 	// Português: inicializa o objeto de controle docker
