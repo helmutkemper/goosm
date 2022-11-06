@@ -19,7 +19,7 @@ In parallel, add all nodes that are not just for building ways in the node colle
 
 ## Português:
 
-#### Problema
+### Problema
 
 O Open Street Maps têm mapas com um volume grande de dados, o mapa global tem algo em torno de 7.9 trilhões de pontos,
 tornando o processamento de dados muito demorado, elevando o custo de manutenção do projeto.
@@ -36,7 +36,7 @@ Procurar por um ID no banco de dados enfrenta o mesmo problema, o primeiro ID in
 retorna a informação em µS, já a busca pelo último ID inserido, findById(1.000.000.000), retorna o valor em ms.
 Isto deixa o processamento de dados muito lento.
 
-#### Solução
+### Solução
 
 Criar um arquivo para busca binária, onde todos os nodes são arquivados em binário.
 
@@ -55,22 +55,22 @@ Porém, uma busca binária simples, com 7.9 trilhões de IDs ainda seria mais de
 final do arquivo, são salvos amostras de IDs para uma segunda busca binária em memória, onde a busca retorna dois 
 endereços, a borda esquerda e a borda direita de onde o ID procurado se encontra no arquivo binário.
 
-#### Resultado
+### Resultado
 
 Para um arquivo pequeno, o processamento foi reduzido para algo em torno de 1h, usando um Mac Book M1.
 
-#### Exemplo
+### Exemplo
 
 Este exemplo faz o download de um mapa do site geo frabrik, monta uma busca binária com todos os nodes e em seguida 
 prepara os nodes e ways para serem usados na forma de [GeoJSon](https://geojson.io)
 
-#### Requerimentos:
+### Requerimentos:
 
 [MongoDB](https://www.mongodb.com/docs/manual/installation/) instalado na porta 27016 com o banco `osm` livre para uso.
 
 > Há um exemplo de como instalar o `MongoDB` de forma simples, com a ajuda do `docker`
 
-#### Como usar este exemplo:
+### Como usar este exemplo:
 
 ```shell
   make build
