@@ -9,11 +9,11 @@ for data.
 
 ### List of examples
 
-| Example             | Description                                                                                         |
-|---------------------|-----------------------------------------------------------------------------------------------------|
-| MongoDB Install     | Install the `MongoDB` database on port `27016` and use the `dockermongodbdata` folder for the data  |
-| Download and parser | Download a map and insert the contents into the `MongoDB` database                                  |
-| Find one by id      | Shows how to use `MongoDB` driver and capture `GeoJson` from geographic information                 |
+| Example             | Description                                                                                          |
+|---------------------|------------------------------------------------------------------------------------------------------|
+| MongoDB Install     | Install the `MongoDB` database on port `27016` and use the `docker/mongodb/data` folder for the data |
+| Download and parser | Download a map and insert the contents into the `MongoDB` database                                   |
+| Find one by id      | Shows how to use `MongoDB` driver and capture `GeoJson` from geographic information                  |
 
 ## Português
 
