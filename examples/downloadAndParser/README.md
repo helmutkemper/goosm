@@ -57,22 +57,25 @@ endereços, a borda esquerda e a borda direita de onde o ID procurado se encontr
 sempre limitada a um bloco de tamanho fixo, definido na criação do arquivo binário.
 
 ```go
-// headers:
-// ...
-// dados:
-// ID:1
-// ID:2
-// ...
-// ...
-// ID:1024
-// ID:1025
-// ...
-// ...
-// ID:x
-// Índices:
+// ...                --+
+// ...                  |
+// ...                  +- header, configuração
+// ...                  |
+// ...                --+
+// ID:1               --+
+// ID:2                 |
+// ...                  |
+// ...                  |
+// ID:1024              +- busca binária primária, em disco
+// ID:1025              |
+// ...                  |
+// ...                  |
+// ID:x               --+
 // ID:0001:Addr:00040 --+
-// ID:1025:Addr:18490   +- busca binária em memória
-// ID:2049:Addr:32824 --+
+// ID:1025:Addr:        |
+// ID:3073:Addr:        +- busca binária secundária, em memória
+// ID:4097:Addr:        |
+// ID:xxxx:Addr:xxxxx --+
 ```
 
 ### Resultado
