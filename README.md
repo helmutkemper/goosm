@@ -2,6 +2,10 @@
 
 Fast open street maps to database
 
+<div align="center">
+  <a href="https://www.youtube.com/watch?v=YOUTUBE_VIDEO_ID_HERE"><img src="https://img.youtube.com/vi/YOUTUBE_VIDEO_ID_HERE/0.jpg" alt="IMAGE ALT TEXT"></a>
+</div>
+
 ## English
 
 This code shows how to decrease the time of importing `Open Street Maps` maps using binary search to optimize the search 
