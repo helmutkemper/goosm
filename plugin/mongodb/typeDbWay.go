@@ -125,7 +125,9 @@ func (e *DbWay) Close() (err error) {
 //	Saída:
 //	  referenceInitialized: objeto do banco de dados pronto para uso
 //	  err: objeto golang error
-func (e *DbWay) New(connection, database, collection string) (referenceInitialized interface{}, err error) {
+func (e *DbWay) New(connection, database, collection string, timeout time.Duration) (referenceInitialized interface{}, err error) {
+	e.SetTimeout(timeout)
+
 	if err = e.Connect(connection); err != nil {
 		return
 	}

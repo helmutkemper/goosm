@@ -18,6 +18,7 @@ func main() {
 
 	var err error
 	var done = make(chan struct{})
+	var timeout = 10 * time.Second
 	var terminalInterval = 2000 * time.Millisecond
 
 	fmt.Println("Starting file download. This may take a while. It's ~300MB.")
@@ -36,7 +37,7 @@ func main() {
 	// English: Defines the object database for nodes
 	// Português: Define o objeto de banco de dados para nodes
 	dbNode := &mongodb.DbNode{}
-	_, err = dbNode.New("mongodb://127.0.0.1:27016/", "osm", "node")
+	_, err = dbNode.New("mongodb://127.0.0.1:27016/", "osm2", "node", timeout)
 	if err != nil {
 		panic(err)
 	}
@@ -44,7 +45,7 @@ func main() {
 	// English: Defines the object database for nodes
 	// Português: Define o objeto de banco de dados para nodes
 	dbWay := &mongodb.DbWay{}
-	_, err = dbWay.New("mongodb://127.0.0.1:27016/", "osm", "way")
+	_, err = dbWay.New("mongodb://127.0.0.1:27016/", "osm2", "way", timeout)
 	if err != nil {
 		panic(err)
 	}
