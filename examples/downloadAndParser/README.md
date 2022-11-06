@@ -2,16 +2,83 @@
 
 ## English:
 
-This example downloads a map from the geo frabrik site, sets up a binary search with all nodes and then prepares the 
-ways to be used.
+### Problem
 
-In parallel, add all nodes that are not just for building ways in the node collection. 
+Open Street Maps have maps with a large volume of data, the global map has something around 7.9 trillion points, making 
+data processing time-consuming, raising the cost of maintaining the project.
 
-#### Requirements:
+The data is archived in relational format, where the first part of the file contains all the nodes and the second part 
+of the file contains all the ways with the IDs of the nodes contained in the first part of the file.
+
+When trying to insert all ~7.9 trillion nodes into the database, the insertion time goes up a lot as the database fills 
+up.
+
+To understand the problem, think of linear IDs, from 1 to 7.9 trillion.
+
+In the test, entering ID 1 took µS, but as the database was filled, the insertion time reached ms.
+
+Searching for an ID in the database faces the same problem, the first ID entered, in a search type, findById(1), returns 
+the information in µS, while the search for the last inserted ID, findById(1,000,000,000), returns the value in ms.
+
+This makes data processing very slow.
+
+### Solution
+
+Create a file for binary search, where all nodes are archived in binary.
+
+The data is `ID+Longitude+Latitude` or `[8]bytes+[4]bytes+[4]bytes`.
+
+The data is converted to binary before being saved, using the golang binary package, as the benchmark test showed the 
+following performances:
+
+| total process | Memory Allocs     | Type of golang data                          |
+|---------------|-------------------|----------------------------------------------|
+|  3.830812750s | 1511656176 Allocs | []byte using binary.LittleEndian.PutUint64() |
+| 13.403035416s | 2413071824 Allocs | map[id][2]float64{longitude, latitude}       |
+| 23.104297458s | 4426114960 Allocs | map[id][]float64{longitude, latitude}        |
+
+However, a simple binary search with 7.9 trillion IDs would still take longer than necessary, so at the end of the file, 
+samples of IDs are saved for a second binary search in memory, where the search returns two addresses, the left border 
+and right border of where the searched ID is in the binary file, so the search is always limited to a fixed-size block, 
+defined at the creation of the binary file.
+
+```go
+// ...                --+
+// ...                  |
+// ...                  +- header, configuração
+// ...                  |
+// ...                --+
+// ID:1               --+
+// ID:2                 |
+// ...                  |
+// ...                  |
+// ID:1024              +- busca binária primária, em disco
+// ID:1025              |
+// ...                  |
+// ...                  |
+// ID:x               --+
+// ID:0001:Addr:00040 --+
+// ID:1025:Addr:        |
+// ID:3073:Addr:        +- busca binária secundária, em memória
+// ID:4097:Addr:        |
+// ID:xxxx:Addr:xxxxx --+
+```
+
+### Result
+
+Total processing time has been reduced by more than 10x
+
+### Example
+
+This example downloads a map file and inserts it into the `MongoDB` database
+
+### Requerimentos:
 
 [MongoDB](https://www.mongodb.com/docs/manual/installation/) installed on port 27016 with the `osm` bank free to use.
 
-#### How to run the example:
+> There is an example of how to install `MongoDB`, with the help of `docker`
+
+### How to use this example:
 
 ```shell
   make build
@@ -80,12 +147,11 @@ sempre limitada a um bloco de tamanho fixo, definido na criação do arquivo bin
 
 ### Resultado
 
-Para um arquivo pequeno, o processamento foi reduzido para algo em torno de 1h, usando um Mac Book M1.
+O tempo total de processamento foi reduzido em mais de 10x
 
 ### Exemplo
 
-Este exemplo faz o download de um mapa do site geo frabrik, monta uma busca binária com todos os nodes e em seguida 
-prepara os nodes e ways para serem usados na forma de [GeoJSon](https://geojson.io)
+Este exemplo baixa um arquivo de mapas e insere no banco de dados `MongoDB`
 
 ### Requerimentos:
 
