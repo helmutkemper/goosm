@@ -45,21 +45,21 @@ defined at the creation of the binary file.
 ```go
 // ...                --+
 // ...                  |
-// ...                  +- header, configuração
+// ...                  +- header, configuration
 // ...                  |
 // ...                --+
 // ID:1               --+
 // ID:2                 |
 // ...                  |
 // ...                  |
-// ID:1024              +- busca binária primária, em disco
+// ID:1024              +- primary binary search, on disk
 // ID:1025              |
 // ...                  |
 // ...                  |
 // ID:x               --+
 // ID:0001:Addr:00040 --+
 // ID:1025:Addr:        |
-// ID:3073:Addr:        +- busca binária secundária, em memória
+// ID:3073:Addr:        +- secondary binary search, in memory
 // ID:4097:Addr:        |
 // ID:xxxx:Addr:xxxxx --+
 ```
