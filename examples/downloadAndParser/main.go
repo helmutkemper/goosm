@@ -20,14 +20,17 @@ func main() {
 	var done = make(chan struct{})
 	var timeout = 10 * time.Second
 	var terminalInterval = 2000 * time.Millisecond
+	var fileDownloadName = "http://download.geofabrik.de/south-america/brazil/sul-latest.osm.pbf"
+	var fileSaveName = "../../planet-221010.osm.1.pbf" //"./sul-latest.osm.pbf"
+	var fileTmpName = "./node.sul.tmp"
 
 	fmt.Println("Starting file download. This may take a while. It's ~300MB.")
 
 	// English: Download the binary file with the map from Open Street Maps
 	// Português: Faz o download do arquivo binário com o mapa do Open Street Maps
 	err = downloadGeoFabrikMap(
-		"http://download.geofabrik.de/south-america/brazil/sul-latest.osm.pbf",
-		"./sul-latest.osm.pbf",
+		fileDownloadName,
+		fileSaveName,
 		terminalInterval,
 	)
 	if err != nil {
@@ -36,16 +39,15 @@ func main() {
 
 	// English: Defines the object database for nodes
 	// Português: Define o objeto de banco de dados para nodes
-	dbNode := &mongodb.DbNode{}
-	_, err = dbNode.New("mongodb://127.0.0.1:27016/", "osm", "node", timeout)
-	if err != nil {
-		panic(err)
-	}
+	var dbNode goosm.InterfaceDbNode
 
 	// English: Defines the object database for nodes
 	// Português: Define o objeto de banco de dados para nodes
-	dbWay := &mongodb.DbWay{}
-	_, err = dbWay.New("mongodb://127.0.0.1:27016/", "osm", "way", timeout)
+	var dbWay goosm.InterfaceDbWay
+
+	// English: Make the database connection
+	// Português: Faz a conexão do banco de dados
+	dbWay, dbNode, err = setupDatabase("mongodb://127.0.0.1:27016/", "osm", timeout)
 	if err != nil {
 		panic(err)
 	}
@@ -58,7 +60,7 @@ func main() {
 	// Português: Comprime e processa o arquivo './sul-latest.osm.pbf' usando uma busca binária em memória e arquivo para ganhar tempo de processamento
 	compressData := &compress.Compress{}
 	compressData.Init(100)
-	err = compressData.Open("./node.sul.tmp")
+	err = compressData.Open(fileTmpName)
 	if err != nil {
 		panic(err)
 	}
@@ -113,7 +115,7 @@ func main() {
 	//   and database for ways, 7.9 trillion of points greatly increases the computational cost.
 	// Português: processa o arquivo. embora a responsabilidade única peça que sejam três funções, busca binária, banco de
 	//   dados para nodes e banco de dados para ways, 7.9 trilhões de pontos elevam muito o custo computacional.
-	_, _, err = osmFileProcess.CompleteParser("./sul-latest.osm.pbf")
+	_, _, err = osmFileProcess.CompleteParser(fileSaveName)
 	log.Printf("time total: %v", time.Since(start))
 	if err != nil {
 		panic(err)
@@ -121,6 +123,55 @@ func main() {
 
 	done <- struct{}{}
 
+}
+
+// setupDatabase
+//
+// English:
+//
+// Make MongoDB database connection
+//
+//	Input:
+//	  conn: connection string. eg. "mongodb://127.0.0.1:27016/"
+//	  database: database name
+//	  timeout: maximum operation time
+//
+//	Output:
+//	  way: object compatible with the goosm.InterfaceDbWay interface
+//	  node: object compatible with the goosm.InterfaceDbNode interface
+//	  err: golang error object
+//
+// Português:
+//
+// Faz a conexão do banco de dados MongoDB
+//
+//	Entrada:
+//	  conn: string de conexão. ex,: "mongodb://127.0.0.1:27016/"
+//	  database: database name
+//	  timeout: tempo máximo da operação
+//
+//	Saída:
+//	  way: objeto compatível com a interface goosm.InterfaceDbWay
+//	  node: objeto compatível com a interface goosm.InterfaceDbNode
+//	  err: objeto de erro golang
+func setupDatabase(conn, database string, timeout time.Duration) (way *mongodb.DbWay, node *mongodb.DbNode, err error) {
+	// English: Defines the object database for nodes
+	// Português: Define o objeto de banco de dados para nodes
+	dbNode := &mongodb.DbNode{}
+	_, err = dbNode.New(conn, database, "node", timeout)
+	if err != nil {
+		panic(err) //fixme
+	}
+
+	// English: Defines the object database for nodes
+	// Português: Define o objeto de banco de dados para nodes
+	dbWay := &mongodb.DbWay{}
+	_, err = dbWay.New(conn, database, "way", timeout)
+	if err != nil {
+		panic(err) //fixme
+	}
+
+	return
 }
 
 // downloadGeoFabrikMap
@@ -146,7 +197,7 @@ func downloadGeoFabrikMap(downloadPath, fileToSavePath string, terminalInterval 
 
 	fileToSave, err = os.Create(fileToSavePath)
 	if err != nil {
-		err = fmt.Errorf("error trying to create the file './sul-latest.osm.pbf': %v", err)
+		err = fmt.Errorf("error trying to create the file '%v': %v", fileToSavePath, err)
 		return err
 	}
 	defer func() {
@@ -155,7 +206,7 @@ func downloadGeoFabrikMap(downloadPath, fileToSavePath string, terminalInterval 
 
 	fileToDownload, err = http.Get(downloadPath)
 	if err != nil {
-		err = fmt.Errorf("error trying to download the file 'http://download.geofabrik.de/south-america/brazil/sul-latest.osm.pbf': %v", err)
+		err = fmt.Errorf("error trying to download the file '%v': %v", downloadPath, err)
 		return err
 	}
 	defer func() {
@@ -186,7 +237,7 @@ func downloadGeoFabrikMap(downloadPath, fileToSavePath string, terminalInterval 
 
 	bytesDownloaded, err = io.Copy(fileToSave, fileToDownload.Body)
 	if err != nil {
-		err = fmt.Errorf("error trying to save the file './sul-latest.osm.pbf': %v", err)
+		err = fmt.Errorf("error trying to save the file '%v': %v", fileToSavePath, err)
 		return err
 	}
 	done <- struct{}{}
