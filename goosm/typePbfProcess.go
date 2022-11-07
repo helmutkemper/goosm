@@ -618,6 +618,7 @@ func (e *PbfProcess) CompleteParser(osmFilePath string) (nodes, ways uint64, err
 						if len(nodeList) == 100 {
 							err = e.databaseNode.SetMany(&nodeList)
 							if err != nil {
+								err = fmt.Errorf("PbfProcess.CompleteParser().SetMany().Error: %v", err)
 								return
 							}
 
@@ -630,7 +631,7 @@ func (e *PbfProcess) CompleteParser(osmFilePath string) (nodes, ways uint64, err
 
 				e.totalOfWaysInTmpFile++
 
-				if writeHeaders == true {
+				if writeHeaders {
 					writeHeaders = false
 
 					err = e.compress.WriteFileHeaders()
@@ -647,25 +648,30 @@ func (e *PbfProcess) CompleteParser(osmFilePath string) (nodes, ways uint64, err
 
 					err = e.compress.ReadFileHeaders()
 					if err != nil {
+						err = fmt.Errorf("PbfProcess.CompleteParser().ReadFileHeaders().Error: %v", err)
 						return
 					}
 
 					err = e.compress.IndexToMemory()
 					if err != nil {
+						err = fmt.Errorf("PbfProcess.CompleteParser().IndexToMemory().Error: %v", err)
 						return
 					}
 				}
 
-				if nodeList != nil && len(nodeList) != 0 {
+				// English: The amount of data in the planetary file is very large and comparing with nil is faster.
+				// Português: A quantidade de dados no arquivo planetário é muito grande e comparar com nil é mais rápido.
+				if nodeList != nil && len(nodeList) != 0 { //nolint:typecheck
 					err = e.databaseNode.SetMany(&nodeList)
 					if err != nil {
+						err = fmt.Errorf("PbfProcess.CompleteParser().SetMany().Error: %v", err)
 						return
 					}
 
 					nodeList = nil
 				}
 
-				if converted.Info.Visible == false {
+				if !converted.Info.Visible {
 					continue
 				}
 
@@ -684,6 +690,7 @@ func (e *PbfProcess) CompleteParser(osmFilePath string) (nodes, ways uint64, err
 						log.Printf("PbfProcess.CompleteParser().event: download ID: %v", nodeID)
 						tmpNode, err = e.downloadApi.DownloadNode(nodeID)
 						if err != nil {
+							err = fmt.Errorf("PbfProcess.CompleteParser().DownloadNode().Error: %v", err)
 							return
 						}
 						lon = tmpNode.Loc[Longitude]
@@ -691,6 +698,7 @@ func (e *PbfProcess) CompleteParser(osmFilePath string) (nodes, ways uint64, err
 					}
 
 					if err != nil {
+						err = fmt.Errorf("PbfProcess.CompleteParser().FindNodeByID().Error: %v", err)
 						return
 					}
 
@@ -699,6 +707,7 @@ func (e *PbfProcess) CompleteParser(osmFilePath string) (nodes, ways uint64, err
 
 				err = way.Init()
 				if err != nil {
+					err = fmt.Errorf("PbfProcess.CompleteParser().Init().Error: %v", err)
 					return
 				}
 				way.MakeGeoJSonFeature()
@@ -710,6 +719,7 @@ func (e *PbfProcess) CompleteParser(osmFilePath string) (nodes, ways uint64, err
 					err = e.databaseWay.SetMany(&wayList)
 					// todo: em caso de erro, inserir um por um e devolver os ways com erro
 					if err != nil {
+						err = fmt.Errorf("PbfProcess.CompleteParser().SetMany(1).Error: %v", err)
 						return
 					}
 					counter = 0
@@ -719,6 +729,7 @@ func (e *PbfProcess) CompleteParser(osmFilePath string) (nodes, ways uint64, err
 			case *osmpbf.Relation:
 
 				err = e.databaseWay.SetMany(&wayList)
+				err = fmt.Errorf("PbfProcess.CompleteParser().SetMany(2).Error: %v", err)
 				return
 
 			default:
@@ -733,110 +744,115 @@ func (e *PbfProcess) CompleteParser(osmFilePath string) (nodes, ways uint64, err
 	return
 }
 
-//func (e *PbfProcess) WrongWayParser(osmFilePath, timeLogPath string) (err error) {
+// BinaryNodeOnlyParser
 //
-//	if e.database == nil {
-//		err = errors.New("PbfProcess.CompleteParser().error: the database object must be defined before this function is called")
-//		return
-//	}
+// English:
 //
-//	e.totalOfNodesInTmpFile = 0
-//	e.totalOfWaysInTmpFile = 0
+// Processes the open street maps file and make only the binary file.
 //
-//	var timeLog *os.File
-//	timeLog, err = os.OpenFile(timeLogPath, os.O_CREATE|os.O_WRONLY, fs.ModePerm)
-//	if err != nil {
-//		err = fmt.Errorf("PbfProcess.CompleteParser().Open(timeLog).Error: %v", err)
-//		return
-//	}
+// Português:
 //
-//	var osmFile *os.File
-//	osmFile, err = os.Open(osmFilePath)
-//	if err != nil {
-//		err = fmt.Errorf("PbfProcess.CompleteParser().Open(osm).Error: %v", err)
-//		return
-//	}
-//
-//	defer func() {
-//		err := osmFile.Close()
-//		if err != nil {
-//			log.Printf("error closing main osm source file: %v", err.Error())
-//		}
-//	}()
-//
-//	osmDecoder := osmpbf.NewDecoder(osmFile)
-//
-//	// use more memory from the start, it is faster
-//	osmDecoder.SetBufferSize(osmpbf.MaxBlobSize)
-//
-//	// start decoding with several goroutines, it is faster
-//	err = osmDecoder.Start(runtime.GOMAXPROCS(-1))
-//	if err != nil {
-//		err = fmt.Errorf("PbfProcess.CompleteParser().Start().Error: %v", err)
-//		return
-//	}
-//
-//	nodeList := make([]Node, 0)
-//	node := Node{}
-//
-//	for {
-//		var osmPbfElement interface{}
-//		if osmPbfElement, err = osmDecoder.Decode(); err == io.EOF {
-//			err = nil
-//			break
-//		} else if err != nil {
-//			err = fmt.Errorf("PbfProcess.CompleteParser().Decode().Error: %v", err)
-//			return
-//		} else {
-//			switch converted := osmPbfElement.(type) {
-//			case *osmpbf.Node:
-//
-//				e.totalOfNodesInTmpFile++
-//
-//				node.Init(converted.ID, converted.Lon, converted.Lat, &converted.Tags)
-//				nodeList = append(nodeList, node)
-//				if len(nodeList) == 100 {
-//					start := time.Now()
-//					err = e.database.SetWrongWayNodeMany(&nodeList)
-//					if err != nil {
-//						err = fmt.Errorf("WrongWayParser().error: the function Osm.SetNodeMany() returned an error: %v", err)
-//						return
-//					}
-//					duration := time.Since(start)
-//					_, err = timeLog.WriteString(strconv.FormatInt(int64(e.totalOfNodesInTmpFile), 10))
-//					if err != nil {
-//						err = fmt.Errorf("WrongWayParser().error: the function timeLog.WriteString() returned an error: %v", err)
-//						return
-//					}
-//					_, err = timeLog.WriteString(",")
-//					if err != nil {
-//						err = fmt.Errorf("WrongWayParser().error: the function timeLog.WriteString() returned an error: %v", err)
-//						return
-//					}
-//					_, err = timeLog.WriteString(strconv.FormatInt(duration.Microseconds(), 10) + "\r\n")
-//					if err != nil {
-//						err = fmt.Errorf("WrongWayParser().error: the function timeLog.WriteString() returned an error: %v", err)
-//						return
-//					}
-//
-//					nodeList = make([]Node, 0)
-//				}
-//
-//			case *osmpbf.Way:
-//				return
-//
-//			case *osmpbf.Relation:
-//				return
-//
-//			default:
-//				err = errors.New("PbfProcess.CompleteParser().error: formato de dado não previsto no arquivo pbf do open street maps")
-//				return
-//			}
-//		}
-//	}
-//
-//	return
-//}
+// Faz o processamento do arquivo do open street maps e faz apenas o arquivo binário.
+func (e *PbfProcess) BinaryNodeOnlyParser(osmFilePath string) (nodes, ways uint64, err error) {
+
+	if e.compress == nil {
+		err = errors.New("PbfProcess.BinaryNodeOnlyParser().error: the compression object must be defined before this function is called")
+		return
+	}
+
+	if e.downloadApi == nil {
+		err = errors.New("PbfProcess.BinaryNodeOnlyParser().error: the download object must be defined before this function is called")
+		return
+	}
+
+	e.totalOfNodesInTmpFile = 0
+	e.totalOfWaysInTmpFile = 0
+
+	var osmFile *os.File
+	osmFile, err = os.Open(osmFilePath)
+	if err != nil {
+		err = fmt.Errorf("PbfProcess.BinaryNodeOnlyParser().Open().Error: %v", err)
+		return
+	}
+
+	defer func() {
+		err := osmFile.Close()
+		if err != nil {
+			log.Printf("error closing main osm source file: %v", err.Error())
+		}
+	}()
+
+	osmDecoder := osmpbf.NewDecoder(osmFile)
+
+	// use more memory from the start, it is faster
+	osmDecoder.SetBufferSize(osmpbf.MaxBlobSize)
+
+	// start decoding with several goroutines, it is faster
+	err = osmDecoder.Start(runtime.GOMAXPROCS(-1))
+	if err != nil {
+		err = fmt.Errorf("PbfProcess.BinaryNodeOnlyParser().Start().Error: %v", err)
+		return
+	}
+
+	for {
+		var osmPbfElement interface{}
+		if osmPbfElement, err = osmDecoder.Decode(); err == io.EOF {
+			err = nil
+			break
+		} else if err != nil {
+			err = fmt.Errorf("PbfProcess.BinaryNodeOnlyParser().Decode().Error: %v", err)
+			return
+		} else {
+			switch converted := osmPbfElement.(type) {
+			case *osmpbf.Node:
+
+				e.totalOfNodesInTmpFile++
+
+				err = e.compress.WriteNode(converted.ID, converted.Lon, converted.Lat)
+				if err != nil {
+					err = fmt.Errorf("PbfProcess.BinaryNodeOnlyParser()WriteNode().Error: %v", err)
+					return
+				}
+
+			case *osmpbf.Way:
+
+				err = e.compress.WriteFileHeaders()
+				if err != nil {
+					err = fmt.Errorf("PbfProcess.BinaryNodeOnlyParser().WriteFileHeaders().Error: %v", err)
+					return
+				}
+
+				err = e.compress.MountIndexIntoFile()
+				if err != nil {
+					err = fmt.Errorf("PbfProcess.BinaryNodeOnlyParser().MountIndexIntoFile().Error: %v", err)
+					return
+				}
+
+				err = e.compress.ReadFileHeaders()
+				if err != nil {
+					err = fmt.Errorf("PbfProcess.BinaryNodeOnlyParser().ReadFileHeaders().Error: %v", err)
+					return
+				}
+
+				err = e.compress.IndexToMemory()
+				if err != nil {
+					err = fmt.Errorf("PbfProcess.BinaryNodeOnlyParser().IndexToMemory().Error: %v", err)
+					return
+				}
+
+				return
+
+			default:
+				err = errors.New("PbfProcess.BinaryNodeOnlyParser().error: formato de dado não previsto no arquivo pbf do open street maps")
+				return
+			}
+		}
+	}
+
+	ways = e.totalOfWaysInTmpFile
+	nodes = e.totalOfNodesInTmpFile
+	return
+}
 
 // GetPartialNumberOfProcessedData
 //
