@@ -48,8 +48,8 @@ defined at the creation of the binary file.
 // ...                  +- header, configuration
 // ...                  |
 // ...                --+
-// ID:1               --+
-// ID:2                 |
+// ID:0001            --+
+// ID:0002              |
 // ...                  |
 // ...                  |
 // ID:1024              +- primary binary search, on disk
@@ -129,8 +129,8 @@ sempre limitada a um bloco de tamanho fixo, definido na criação do arquivo bin
 // ...                  +- header, configuração
 // ...                  |
 // ...                --+
-// ID:1               --+
-// ID:2                 |
+// ID:0001            --+
+// ID:0002              |
 // ...                  |
 // ...                  |
 // ID:1024              +- busca binária primária, em disco
