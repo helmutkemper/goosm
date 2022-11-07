@@ -160,7 +160,8 @@ func setupDatabase(conn, database string, timeout time.Duration) (way *mongodb.D
 	dbNode := &mongodb.DbNode{}
 	_, err = dbNode.New(conn, database, "node", timeout)
 	if err != nil {
-		panic(err) //fixme
+		err = fmt.Errorf("setupDatabase: the function dbNode.New() returned an error: %v", err)
+		return
 	}
 
 	// English: Defines the object database for nodes
@@ -168,7 +169,8 @@ func setupDatabase(conn, database string, timeout time.Duration) (way *mongodb.D
 	dbWay := &mongodb.DbWay{}
 	_, err = dbWay.New(conn, database, "way", timeout)
 	if err != nil {
-		panic(err) //fixme
+		err = fmt.Errorf("setupDatabase: the function dbWay.New() returned an error: %v", err)
+		return
 	}
 
 	return
