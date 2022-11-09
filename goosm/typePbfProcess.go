@@ -56,7 +56,7 @@ type CompressInterface interface {
 	//    places: quantidade de casas decimais. Ex: 7.0
 	Round(value, places float64) float64
 
-	// Open
+	// Create
 	//
 	// English:
 	//
