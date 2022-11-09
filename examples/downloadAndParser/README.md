@@ -113,6 +113,7 @@ banco de dados é preenchido.
 |                                                            |                                                        |
 |        Tempo de inserção de para bloco de 100 nodes        |      Tempo de inserção de para bloco de 100 nodes      |
 |                 Total de nodes na coleção: 0               |        Total de nodes na coleção: 1.000.000.000        |
+|          Total de nodes inseridos em 2s: ~180.000          |        Total de nodes inseridos em 2s: ~90.000         |
 |                                                            |                                                        |
 +------------------------------------------------------------+--------------------------------------------------------+
 ```
