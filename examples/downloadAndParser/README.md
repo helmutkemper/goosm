@@ -97,6 +97,13 @@ do arquivo contém todos os ways com os IDs dos nodes contidos na primeira parte
 Quando se tenta inserir todos os ~7.9 trilhões de nodes no banco de dados, o tempo de inserção sobe muito a medida que
 banco de dados é preenchido.
 
+![times](./times.png)
+```shell
+|                                                          |                                                          |
+|                                                          |                                                          |
++----------------------------------------------------------+----------------------------------------------------------+
+```
+
 Para entender o problema, pense em IDs linear, de 1 a 7.9 trilhões. 
 No teste, inserir o ID 1 levou µS, mas, a medida que o banco de dados foi preenchido, o tempo de inserção chegou a ms.
 Procurar por um ID no banco de dados enfrenta o mesmo problema, o primeiro ID inserido em uma busca tipo, findById(1),

@@ -183,14 +183,14 @@ func (e *DbWay) SetOne(way *goosm.Way) (err error) {
 // Returns a way according to ID
 //
 //	Input:
-//	  id: ID in the Open Street Maps project pattern
+//	  id: ID in the Create Street Maps project pattern
 //
 // Português:
 //
 // Retorna um way de acordo com o ID
 //
 //	Entrada:
-//	  id: ID no padrão do projeto Open Street Maps.
+//	  id: ID no padrão do projeto Create Street Maps.
 func (e *DbWay) GetById(id int64) (way goosm.Way, err error) {
 	var wayDb Way
 	ctx, cancel := context.WithTimeout(context.Background(), e.timeout)

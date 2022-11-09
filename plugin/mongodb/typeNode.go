@@ -10,7 +10,7 @@ type Node struct {
 	// Este campo deve obrigatoriamente ser um array devido a indexação do MongoDB
 	Loc GeoJSonPoint `bson:"loc"`
 
-	// Tags do Open Street Maps
+	// Tags do Create Street Maps
 	Tag map[string]string `bson:"tag,omitempty"`
 
 	GeoJSonFeature string `bson:"geoJSonFeature,omitempty"`

@@ -35,7 +35,7 @@ type Polygon struct {
 	//
 	// The Tags contain all kinds of information, as long as they were imported, the name of a commercial establishment, for example.
 	//
-	// English: Tags do Open Street Maps
+	// English: Tags do Create Street Maps
 	//
 	// As Tags contêm _todo tipo de informação, desde como elas foram importadas, ao nome de um estabelecimento comercial, por exemplo.
 	Tag map[string]string `bson:"tag"`

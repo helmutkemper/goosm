@@ -478,6 +478,32 @@ func (e *Compress) Init(blockSize int64) {
 	e.memory = make([][2]int64, 0)
 }
 
+func (e *Compress) OpenForSearch(path string) (err error) {
+	if e.file != nil {
+		_ = e.file.Close()
+	}
+
+	e.file, err = os.OpenFile(path, os.O_APPEND|os.O_RDONLY, fs.ModePerm)
+	if err != nil {
+		err = fmt.Errorf("Compress.OpenForSearch().OpenFile().Error: %v", err)
+		return
+	}
+
+	err = e.ReadFileHeaders()
+	if err != nil {
+		err = fmt.Errorf("Compress.OpenForSearch().ReadFileHeaders().Error: %v", err)
+		return
+	}
+
+	err = e.IndexToMemory()
+	if err != nil {
+		err = fmt.Errorf("Compress.OpenForSearch().IndexToMemory().Error: %v", err)
+		return
+	}
+
+	return
+}
+
 // ResizeBlock
 //
 // English:
@@ -550,7 +576,7 @@ func (e *Compress) Round(value, places float64) float64 {
 	return round / pow
 }
 
-// Open
+// Create
 //
 // English:
 //
@@ -559,12 +585,16 @@ func (e *Compress) Round(value, places float64) float64 {
 // Português:
 //
 // Abre o arquivo temporário.
-func (e *Compress) Open(path string) (err error) {
+func (e *Compress) Create(path string) (err error) {
 	if e.file != nil {
 		_ = e.file.Close()
 	}
 
 	e.file, err = os.OpenFile(path, os.O_CREATE|os.O_RDWR, fs.ModePerm)
+	if err != nil {
+		err = fmt.Errorf("compress.Create().error: the function OpenFile() returned an error: %v", err)
+		return
+	}
 	return
 }
 

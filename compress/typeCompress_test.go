@@ -25,7 +25,7 @@ func TestCompress_node(t *testing.T) {
 
 	compress := Compress{}
 	compress.Init(10)
-	err = compress.Open("./test.node.tmp")
+	err = compress.Create("./test.node.tmp")
 	if err != nil {
 		t.Logf("open file error: %v", err)
 		t.FailNow()
@@ -83,7 +83,7 @@ func TestCompress(t *testing.T) {
 
 	compress := Compress{}
 	compress.Init(7)
-	err = compress.Open("./test.node.tmp")
+	err = compress.Create("./test.node.tmp")
 	if err != nil {
 		t.Logf("open file error: %v", err)
 		t.FailNow()
@@ -123,7 +123,7 @@ func TestCompress(t *testing.T) {
 	// -------------------------------------------------------------------------------------------------------------------
 
 	compress.Init(7)
-	err = compress.Open("./test.node.tmp")
+	err = compress.Create("./test.node.tmp")
 	if err != nil {
 		t.Logf("open file error: %v", err)
 		t.FailNow()

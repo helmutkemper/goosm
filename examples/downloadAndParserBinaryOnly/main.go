@@ -19,13 +19,13 @@ func main() {
 	var done = make(chan struct{})
 	var terminalInterval = 2000 * time.Millisecond
 	var fileDownloadName = "http://download.geofabrik.de/south-america/brazil/sul-latest.osm.pbf"
-	var fileSaveName = "../../planet-221010.osm.1.pbf" //"./sul-latest.osm.pbf"
+	var fileSaveName = "../../planet-221010.osm.1.pbf" //"./sul-latest.osm.pbf" //15h44m43.176031583s
 	var fileTmpName = "./node.sul.tmp"
 
 	fmt.Println("Starting file download. This may take a while. It's ~300MB.")
 
-	// English: Download the binary file with the map from Open Street Maps
-	// Português: Faz o download do arquivo binário com o mapa do Open Street Maps
+	// English: Download the binary file with the map from Create Street Maps
+	// Português: Faz o download do arquivo binário com o mapa do Create Street Maps
 	err = downloadGeoFabrikMap(
 		fileDownloadName,
 		fileSaveName,
@@ -42,8 +42,8 @@ func main() {
 	// English: Compress and process the file '.sul-latest.osm.pbf' using a binary search in memory and file to save processing time
 	// Português: Comprime e processa o arquivo './sul-latest.osm.pbf' usando uma busca binária em memória e arquivo para ganhar tempo de processamento
 	compressData := &compress.Compress{}
-	compressData.Init(100)
-	err = compressData.Open(fileTmpName)
+	compressData.Init(1000)
+	err = compressData.Create(fileTmpName)
 	if err != nil {
 		panic(err)
 	}
@@ -51,8 +51,8 @@ func main() {
 
 	start := time.Now()
 
-	// English: Process Open Street Maps binary file
-	// Português: Processa o arquivo binário do Open Street Maps
+	// English: Process Create Street Maps binary file
+	// Português: Processa o arquivo binário do Create Street Maps
 	var osmFileProcess = &goosm.PbfProcess{}
 
 	// English: determines the download interface for when a point is not found in the file
@@ -63,8 +63,8 @@ func main() {
 	// Português: determina o tempo máximo de resposta do banco de dados para fazer 100 inserções simultâneas
 	osmFileProcess.SetDatabaseTimeout(10 * 60 * time.Second)
 
-	// English: Defines the binary search interface to process the Open Street Maps file
-	// Português: Define a interface da busca binária para processar o arquivo do Open Street Maps
+	// English: Defines the binary search interface to process the Create Street Maps file
+	// Português: Define a interface da busca binária para processar o arquivo do Create Street Maps
 	osmFileProcess.SetCompress(compressData)
 
 	parcialReportTicker := time.NewTicker(terminalInterval)

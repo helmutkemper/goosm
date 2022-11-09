@@ -183,14 +183,14 @@ func (e *DbNode) SetOne(node *goosm.Node) (err error) { //nolint:typecheck
 // Returns a node according to ID
 //
 //	Input:
-//	  id: ID in the Open Street Maps project pattern
+//	  id: ID in the Create Street Maps project pattern
 //
 // Português:
 //
 // Retorna um node de acordo com o ID
 //
 //	Entrada:
-//	  id: ID no padrão do projeto Open Street Maps
+//	  id: ID no padrão do projeto Create Street Maps
 func (e *DbNode) GetById(id int64) (node goosm.Node, err error) { //nolint:typecheck
 	var nodeDb Node
 	ctx, cancel := context.WithTimeout(context.Background(), e.timeout)

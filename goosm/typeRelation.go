@@ -21,18 +21,18 @@ type Relation struct {
 	IdPolygon      []int64 `bson:"idPolygon"`
 	IdPolygonsList []int64 `bson:"idPolygonsList"`
 	Version        int64   `bson:"Version"`
-	// TimeStamp dentro do Open Street Maps
+	// TimeStamp dentro do Create Street Maps
 	TimeStamp time.Time `bson:"timeStamp"`
-	// ChangeSet dentro do Open Street Maps
+	// ChangeSet dentro do Create Street Maps
 	ChangeSet int64 `bson:"changeSet"`
 
 	Visible bool
 
-	// User Id dentro do Open Street Maps
+	// User Id dentro do Create Street Maps
 	UId int64 `bson:"userId"`
-	// User Name dentro do Open Street Maps
+	// User Name dentro do Create Street Maps
 	User string `bson:"-"`
-	// Tags do Open Street Maps
+	// Tags do Create Street Maps
 	// As Tags contêm _todo tipo de informação, desde como elas foram importadas, ao nome de um estabelecimento comercial,
 	// por exemplo.
 	Tag            map[string]string `bson:"tag"`

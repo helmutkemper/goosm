@@ -12,7 +12,7 @@ import (
 //
 // English:
 //
-// # Open street maps node
+// # Create street maps node
 //
 // Português:
 //
@@ -20,7 +20,7 @@ import (
 type Node struct {
 	Common
 
-	// English: Open street maps ID
+	// English: Create street maps ID
 	// Português: ID do open street maps
 	Id int64
 
@@ -32,7 +32,7 @@ type Node struct {
 	// Português: Array Loc convertido para radianos, usado em cálculos golang
 	Rad [2]float64
 
-	// Tags do Open Street Maps
+	// Tags do Create Street Maps
 	// As Tags contêm _todo tipo de informação, desde como elas foram importadas, ao nome de um estabelecimento comercial,
 	// por exemplo.
 
