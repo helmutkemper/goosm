@@ -100,6 +100,14 @@ banco de dados é preenchido.
 ![times](./times.png)
 ```shell
 |                                                            |                                                        |
+|        Tempo de inserção de para bloco de 100 nodes        |      Tempo de inserção de para bloco de 100 nodes      |
+|                 Total de nodes na coleção: 0               |        Total de nodes na coleção: 1.000.000.000        |
+|                                                            |                                                        |
++------------------------------------------------------------+--------------------------------------------------------+
+```
+
+```shell
+|                                                            |                                                        |
 |                                                            |                                                        |
 +------------------------------------------------------------+--------------------------------------------------------+
 ```
