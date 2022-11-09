@@ -13,6 +13,17 @@ of the file contains all the ways with the IDs of the nodes contained in the fir
 When trying to insert all ~7.9 trillion nodes into the database, the insertion time goes up a lot as the database fills 
 up.
 
+
+![times](./times.png)
+```
+|                                                            |                                                        |
+|           Insertion time for a block of 100 nodes          |        Insertion time for a block of 100 nodes         |
+|               Total nodes in the collection: 0             |     Total nodes in the collection: 1.000.000.000       |
+|                                                            |                                                        |
++------------------------------------------------------------+--------------------------------------------------------+
+```
+
+
 To understand the problem, think of linear IDs, from 1 to 7.9 trillion.
 
 In the test, entering ID 1 took µS, but as the database was filled, the insertion time reached ms.
@@ -102,12 +113,6 @@ banco de dados é preenchido.
 |                                                            |                                                        |
 |        Tempo de inserção de para bloco de 100 nodes        |      Tempo de inserção de para bloco de 100 nodes      |
 |                 Total de nodes na coleção: 0               |        Total de nodes na coleção: 1.000.000.000        |
-|                                                            |                                                        |
-+------------------------------------------------------------+--------------------------------------------------------+
-```
-
-```shell
-|                                                            |                                                        |
 |                                                            |                                                        |
 +------------------------------------------------------------+--------------------------------------------------------+
 ```
