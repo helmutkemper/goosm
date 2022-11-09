@@ -28,15 +28,6 @@ up.
 
 > * ~1 trillion nodes; ~7.9 trillion nodes;
 
-To understand the problem, think of linear IDs, from 1 to 7.9 trillion.
-
-In the test, entering ID 1 took µS, but as the database was filled, the insertion time reached ms.
-
-Searching for an ID in the database faces the same problem, the first ID entered, in a search type, findById(1), returns 
-the information in µS, while the search for the last inserted ID, findById(1,000,000,000), returns the value in ms.
-
-This makes data processing very slow.
-
 ### Solution
 
 Create a file for binary search, where all nodes are archived in binary.
@@ -125,12 +116,6 @@ banco de dados é preenchido.
 ```
 
 > * ~1 trilhão de nodes; ** ~7.9 trilhões de nodes;
-
-Para entender o problema, pense em IDs linear, de 1 a 7.9 trilhões. 
-No teste, inserir o ID 1 levou µS, mas, a medida que o banco de dados foi preenchido, o tempo de inserção chegou a ms.
-Procurar por um ID no banco de dados enfrenta o mesmo problema, o primeiro ID inserido em uma busca tipo, findById(1),
-retorna a informação em µS, já a busca pelo último ID inserido, findById(1.000.000.000), retorna o valor em ms.
-Isto deixa o processamento de dados muito lento.
 
 ### Solução
 
