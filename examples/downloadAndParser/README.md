@@ -21,7 +21,7 @@ up.
 |               Insertion time for 100 node block            |      Total nodes in the collection: 1.000.000.000      |
 |               Total nodes in the collection: 0             |          Total nodes inserted in 2s: ~80.000           |
 |             Total nodes inserted in 2s: ~180.000           |         Search by ID in MongoDB: 1088285 ns/op         |
-|                                                            |        Binary search by ID: 9390 ns/op (~100x)         |
+|            Search by ID in MongoDB: 1099788 ns/op          |        Binary search by ID: 9390 ns/op (~100x)         |
 |                                                            |                                                        |
 +------------------------------------------------------------+--------------------------------------------------------+
 ```
@@ -111,13 +111,13 @@ Quando se tenta inserir todos os ~7.9 trilhões de nodes no banco de dados, o te
 banco de dados é preenchido.
 
 ![times](./times.png)
-```shell
+```
 |                                                            |                                                        |
 |                                                            |       Tempo de inserção para bloco de 100 nodes        |
 |          Tempo de inserção para bloco de 100 nodes         |        Total de nodes na coleção: 1.000.000.000        |
 |                 Total de nodes na coleção: 0               |        Total de nodes inseridos em 2s: ~80.000         |
 |          Total de nodes inseridos em 2s: ~180.000          |         Busca por ID no MongoDB: 1088285 ns/op         |
-|                                                            |        Busca por ID binária: 9390 ns/op (~100x)        |
+|           Busca por ID no MongoDB: 1099788 ns/op           |        Busca por ID binária: 9390 ns/op (~100x)        |
 |                                                            |                                                        |
 +------------------------------------------------------------+--------------------------------------------------------+
 ```
