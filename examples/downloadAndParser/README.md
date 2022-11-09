@@ -20,11 +20,13 @@ up.
 |                                                            |           Insertion time for 100 node block            |
 |               Insertion time for 100 node block            |      Total nodes in the collection: 1.000.000.000      |
 |               Total nodes in the collection: 0             |          Total nodes inserted in 2s: ~80.000           |
-|             Total nodes inserted in 2s: ~180.000           |         Search by ID in MongoDB: 1088285 ns/op         |
-|            Search by ID in MongoDB: 1099788 ns/op          |        Binary search by ID: 9390 ns/op (~100x)         |
+|             Total nodes inserted in 2s: ~180.000           |        Search by ID in MongoDB: 1088285 ns/op *        |
+|            Search by ID in MongoDB: 1099788 ns/op          |       Binary search by ID: 9390 ns/op (~100x) **       |
 |                                                            |                                                        |
 +------------------------------------------------------------+--------------------------------------------------------+
 ```
+
+> * ~1 trillion nodes; ~7.9 trillion nodes;
 
 To understand the problem, think of linear IDs, from 1 to 7.9 trillion.
 
@@ -116,11 +118,13 @@ banco de dados é preenchido.
 |                                                            |       Tempo de inserção para bloco de 100 nodes        |
 |          Tempo de inserção para bloco de 100 nodes         |        Total de nodes na coleção: 1.000.000.000        |
 |                 Total de nodes na coleção: 0               |        Total de nodes inseridos em 2s: ~80.000         |
-|          Total de nodes inseridos em 2s: ~180.000          |         Busca por ID no MongoDB: 1088285 ns/op         |
-|           Busca por ID no MongoDB: 1099788 ns/op           |        Busca por ID binária: 9390 ns/op (~100x)        |
+|          Total de nodes inseridos em 2s: ~180.000          |        Busca por ID no MongoDB: 1088285 ns/op *        |
+|           Busca por ID no MongoDB: 1099788 ns/op           |       Busca por ID binária: 9390 ns/op (~100x) **      |
 |                                                            |                                                        |
 +------------------------------------------------------------+--------------------------------------------------------+
 ```
+
+> * ~1 trilhão de nodes; ** ~7.9 trilhões de nodes;
 
 Para entender o problema, pense em IDs linear, de 1 a 7.9 trilhões. 
 No teste, inserir o ID 1 levou µS, mas, a medida que o banco de dados foi preenchido, o tempo de inserção chegou a ms.
