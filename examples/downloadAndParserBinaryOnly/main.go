@@ -19,8 +19,8 @@ func main() {
 	var done = make(chan struct{})
 	var terminalInterval = 2000 * time.Millisecond
 	var fileDownloadName = "http://download.geofabrik.de/south-america/brazil/sul-latest.osm.pbf"
-	var fileSaveName = "../../planet-221010.osm.1.pbf" //"./sul-latest.osm.pbf" //15h44m43.176031583s
-	var fileTmpName = "./node.sul.tmp"
+	var fileSaveName = "../commonFiles/sul-latest.osm.pbf"
+	var fileTmpName = "../commonFiles/sul-latest.tmp"
 
 	fmt.Println("Starting file download. This may take a while. It's ~300MB.")
 

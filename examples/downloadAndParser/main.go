@@ -21,8 +21,8 @@ func main() {
 	var timeout = 10 * time.Second
 	var terminalInterval = 2000 * time.Millisecond
 	var fileDownloadName = "http://download.geofabrik.de/south-america/brazil/sul-latest.osm.pbf"
-	var fileSaveName = "../../planet-221010.osm.1.pbf" //"./sul-latest.osm.pbf"
-	var fileTmpName = "./node.sul.tmp"
+	var fileSaveName = "../commonFiles/sul-latest.osm.pbf"
+	var fileTmpName = "../commonFiles/sul-latest.tmp"
 
 	fmt.Println("Starting file download. This may take a while. It's ~300MB.")
 
@@ -157,8 +157,8 @@ func main() {
 func setupDatabase(conn, database string, timeout time.Duration) (way *mongodb.DbWay, node *mongodb.DbNode, err error) {
 	// English: Defines the object database for nodes
 	// Português: Define o objeto de banco de dados para nodes
-	dbNode := &mongodb.DbNode{}
-	_, err = dbNode.New(conn, database, "node", timeout)
+	node = &mongodb.DbNode{}
+	_, err = node.New(conn, database, "node", timeout)
 	if err != nil {
 		err = fmt.Errorf("setupDatabase: the function dbNode.New() returned an error: %v", err)
 		return
@@ -166,8 +166,8 @@ func setupDatabase(conn, database string, timeout time.Duration) (way *mongodb.D
 
 	// English: Defines the object database for nodes
 	// Português: Define o objeto de banco de dados para nodes
-	dbWay := &mongodb.DbWay{}
-	_, err = dbWay.New(conn, database, "way", timeout)
+	way = &mongodb.DbWay{}
+	_, err = way.New(conn, database, "way", timeout)
 	if err != nil {
 		err = fmt.Errorf("setupDatabase: the function dbWay.New() returned an error: %v", err)
 		return

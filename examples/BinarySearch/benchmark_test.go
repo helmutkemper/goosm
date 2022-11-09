@@ -3,57 +3,17 @@ package main
 import (
 	"goosm/compress"
 	"math/rand"
-	"os"
-	"runtime/pprof"
 	"testing"
 	"time"
 )
 
-//func TestName(t *testing.T) {
-//	var err error
-//	compressData := &compress.Compress{}
-//	compressData.Init(1024)
-//	err = compressData.Create("/Users/kemper/go/projetos/goosm/examples/BinarySearch/node.planet.tmp")
-//	if err != nil {
-//		t.Logf("%v", err)
-//		t.FailNow()
-//	}
-//	err = compressData.ResizeBlock(1024)
-//	if err != nil {
-//		t.Logf("%v", err)
-//		t.FailNow()
-//	}
-//
-//}
-
-// goos: darwin
-// goarch: arm64
-// block size: 100
-// starting time: 1m30s
-// BenchmarkFindNodeById-8   	  185588	      5496 ns/op	       7 B/op	       0 allocs/op
-// block size: 1024
-// starting time: 8.5s
-// BenchmarkFindNodeById-8   	  141294	      7860 ns/op	       9 B/op	       0 allocs/op
 func BenchmarkFindNodeById(b *testing.B) {
 	var err error
-	var f *os.File
-	f, err = os.Create("/Users/kemper/go/projetos/goosm/examples/BinarySearch/profile")
-	if err != nil {
-		b.Logf("%v", err)
-		b.FailNow()
-	}
-	err = pprof.StartCPUProfile(f)
-	if err != nil {
-		b.Logf("%v", err)
-		b.FailNow()
-	}
-
-	defer pprof.StopCPUProfile()
 
 	start := time.Now()
 	compressData := &compress.Compress{}
 	compressData.Init(1000)
-	err = compressData.OpenForSearch("/Users/kemper/go/projetos/goosm/examples/BinarySearch/node.planet.tmp")
+	err = compressData.OpenForSearch("../commonFiles/node.planet.tmp")
 	if err != nil {
 		b.Errorf("%v", err)
 	}

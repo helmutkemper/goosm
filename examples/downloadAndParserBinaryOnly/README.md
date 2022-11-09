@@ -1,4 +1,4 @@
-# download and parser
+# download and parser binary file only
 
 ## English:
 
@@ -13,14 +13,21 @@ of the file contains all the ways with the IDs of the nodes contained in the fir
 When trying to insert all ~7.9 trillion nodes into the database, the insertion time goes up a lot as the database fills 
 up.
 
-To understand the problem, think of linear IDs, from 1 to 7.9 trillion.
+The graph below shows the amount of nodes contained in the collection, and the insertion time as more nodes are inserted 
+into the collection for the first 2.400 nodes.
 
-In the test, entering ID 1 took µS, but as the database was filled, the insertion time reached ms.
+![banco de daods limpo](./limpo.png)
 
-Searching for an ID in the database faces the same problem, the first ID entered, in a search type, findById(1), returns 
-the information in µS, while the search for the last inserted ID, findById(1,000,000,000), returns the value in ms.
+However, as more data is entered, the insertion time goes up, making it very difficult to enter 7.9 trillion nodes.
 
-This makes data processing very slow.
+![banco de daods meio cheio](./cheio.png)
+
+Some test points:
+
+* When the MongoDB collection was clean, the code could insert an average of 180,000 nodes in 2s;
+* An ID search in MongoDB showed an efficiency of 1.099.788 ns/op for ID=1;
+* After just over 39 million nodes were inserted, the code lost efficiency and started to insert approximately 80.000 nodes in 2s;
+* An ID search in MongoDB showed an efficiency of 1.088.285 ns/op for ID=39 million;
 
 ### Solution
 
@@ -66,14 +73,13 @@ defined at the creation of the binary file.
 
 ### Result
 
-Total processing time has been reduced by more than 10x
+Once populated with over 7.9 trillion nodes, the binary search had an efficiency of 9.390 ns/op (~100x more efficient) **
+
+> ** 2048 randomly chosen IDs were used, and the sample block set to 1024 items per block.
 
 ### Example
 
-This example downloads a map file and mount the binary file.
-
-As a rule of open street maps, an ID cannot have its data changed after it has been created, so once the temporary file 
-is created, it can be used to process newer versions of the map. 
+This example downloads a map file and inserts it into the `MongoDB` database.
 
 ### Requerimentos:
 
@@ -98,13 +104,24 @@ Os dados são arquivados em formato relacional, onde a primeira parte do arquivo
 do arquivo contém todos os ways com os IDs dos nodes contidos na primeira parte do arquivo.
 
 Quando se tenta inserir todos os ~7.9 trilhões de nodes no banco de dados, o tempo de inserção sobe muito a medida que
-banco de dados é preenchido.
+o banco de dados é preenchido.
 
-Para entender o problema, pense em IDs linear, de 1 a 7.9 trilhões. 
-No teste, inserir o ID 1 levou µS, mas, a medida que o banco de dados foi preenchido, o tempo de inserção chegou a ms.
-Procurar por um ID no banco de dados enfrenta o mesmo problema, o primeiro ID inserido em uma busca tipo, findById(1),
-retorna a informação em µS, já a busca pelo último ID inserido, findById(1.000.000.000), retorna o valor em ms.
-Isto deixa o processamento de dados muito lento.
+O gráfico abaixo mostra a quantidade de nodes contida na coleção, e o tempo de inserção a medida que mais nodes são 
+inseridos na coleção para os primeiros 2.400 nodes
+
+![banco de daods limpo](./limpo.png)
+
+Porém, a medida que mais dados são inseridos, o tempo de inserção sobe, dificultando muito a inserção de 7.9 trilhões
+de nodes.
+
+![banco de daods meio cheio](./cheio.png)
+
+Alguns pontos do teste:
+
+  * Quando a coleção do MongoDB estava limpa, o código conseguia inserir uma média de 180.000 nodes em 2s;
+  * Uma busca por ID no MongoDB demostrou uma eficiência de 1.099.788 ns/op para ID=1;
+  * Depois de pouco mais de 39 milhões nodes inseridos, o código perdeu eficiência e passou a inserir aproximadamente 80.000 nodes em 2s;
+  * Uma busca por ID no MongoDB demostrou uma eficiência de 1.088.285 ns/op para ID=39 milhões;
 
 ### Solução
 
@@ -150,14 +167,13 @@ sempre limitada a um bloco de tamanho fixo, definido na criação do arquivo bin
 
 ### Resultado
 
-O tempo total de processamento foi reduzido em mais de 10x
+Depois de preenchido, com mais de 7.9 trilhões de nodes, a busca binária teve uma eficiência de 9.390 ns/op (~100x mais eficiente) **
+
+> ** Foram usados 2048 IDs escolhidos aleatoriamente e o bloco de amostras configurado para 1024 itens por bloco.
 
 ### Exemplo
 
-Este exemplo baixa um arquivo de mapas e gera o arquivo binário.
-
-Por regra do open street maps, um ID não pode ter o dado alterado depois de criado, por isto, uma vez criado o arquivo 
-temporário, ele pode ser usado para processar versões mais novas do mapa.
+Este exemplo baixa um arquivo de mapas e insere no banco de dados `MongoDB`
 
 ### Requerimentos:
 
