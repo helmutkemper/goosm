@@ -6,7 +6,7 @@ Fast open street maps to database
   <a href="https://www.youtube.com/watch?v=tZbQPdCAtC0"><img src="https://img.youtube.com/vi/tZbQPdCAtC0/0.jpg" width="900px" alt="youtube video"></a>
 </div-->
 
-## English
+# English
 
 This code shows how to decrease the time of importing `Open Street Maps` maps using binary search to optimize the search 
 for data.
@@ -30,7 +30,7 @@ for data.
 | InterfaceDbNode      | Inserting nodes into the database                 |
 | InterfaceDbWay       | Inserting ways into the database                  |
 
-## Português
+# Português
 
 Este código mostra como diminuir o tempo de importação dos mapas do `Open Street Maps` usando busca binária para 
 otimizar a procura por dados
