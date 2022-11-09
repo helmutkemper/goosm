@@ -13,20 +13,21 @@ of the file contains all the ways with the IDs of the nodes contained in the fir
 When trying to insert all ~7.9 trillion nodes into the database, the insertion time goes up a lot as the database fills 
 up.
 
+The graph below shows the amount of nodes contained in the collection, and the insertion time as more nodes are inserted 
+into the collection for the first 2.400 nodes.
 
-![times](./times.png)
-```
-|                                                            |                                                        |
-|                                                            |           Insertion time for 100 node block            |
-|               Insertion time for 100 node block            |      Total nodes in the collection: 1.000.000.000      |
-|               Total nodes in the collection: 0             |          Total nodes inserted in 2s: ~80.000           |
-|             Total nodes inserted in 2s: ~180.000           |        Search by ID in MongoDB: 1088285 ns/op *        |
-|            Search by ID in MongoDB: 1099788 ns/op          |       Binary search by ID: 9390 ns/op (~100x) **       |
-|                                                            |                                                        |
-+------------------------------------------------------------+--------------------------------------------------------+
-```
+![banco de daods limpo](./limpo.png)
 
-> * ~1 trillion nodes; ** ~7.9 trillion nodes; *** _id is node.ID 
+However, as more data is entered, the insertion time goes up, making it very difficult to enter 7.9 trillion nodes.
+
+![banco de daods meio cheio](./cheio.png)
+
+Some test points:
+
+* When the MongoDB collection was clean, the code could insert an average of 180,000 nodes in 2s;
+* An ID search in MongoDB showed an efficiency of 1.099.788 ns/op for ID=1;
+* After just over 39 million nodes were inserted, the code lost efficiency and started to insert approximately 80.000 nodes in 2s;
+* An ID search in MongoDB showed an efficiency of 1.088.285 ns/op for ID=39 million;
 
 ### Solution
 
@@ -72,11 +73,13 @@ defined at the creation of the binary file.
 
 ### Result
 
-Total processing time has been reduced by more than 10x
+Once populated with over 7.9 trillion nodes, the binary search had an efficiency of 9.390 ns/op (~100x more efficient) **
+
+> ** 2048 randomly chosen IDs were used, and the sample block set to 1024 items per block.
 
 ### Example
 
-This example downloads a map file and inserts it into the `MongoDB` database
+This example downloads a map file and inserts it into the `MongoDB` database.
 
 ### Requerimentos:
 
@@ -101,21 +104,24 @@ Os dados são arquivados em formato relacional, onde a primeira parte do arquivo
 do arquivo contém todos os ways com os IDs dos nodes contidos na primeira parte do arquivo.
 
 Quando se tenta inserir todos os ~7.9 trilhões de nodes no banco de dados, o tempo de inserção sobe muito a medida que
-banco de dados é preenchido.
+o banco de dados é preenchido.
 
-![times](./times.png)
-```
-|                                                            |                                                        |
-|                                                            |       Tempo de inserção para bloco de 100 nodes        |
-|          Tempo de inserção para bloco de 100 nodes         |        Total de nodes na coleção: 1.000.000.000        |
-|                 Total de nodes na coleção: 0               |        Total de nodes inseridos em 2s: ~80.000         |
-|          Total de nodes inseridos em 2s: ~180.000          |        Busca por ID no MongoDB: 1088285 ns/op *        |
-|           Busca por ID no MongoDB: 1099788 ns/op           |       Busca por ID binária: 9390 ns/op (~100x) **      |
-|                                                            |                                                        |
-+------------------------------------------------------------+--------------------------------------------------------+
-```
+O gráfico abaixo mostra a quantidade de nodes contida na coleção, e o tempo de inserção a medida que mais nodes são 
+inseridos na coleção para os primeiros 2.400 nodes
 
-> * ~1 trilhão de nodes; ** ~7.9 trilhões de nodes; *** _id é node.ID
+![banco de daods limpo](./limpo.png)
+
+Porém, a medida que mais dados são inseridos, o tempo de inserção sobe, dificultando muito a inserção de 7.9 trilhões
+de nodes.
+
+![banco de daods meio cheio](./cheio.png)
+
+Alguns pontos do teste:
+
+  * Quando a coleção do MongoDB estava limpa, o código conseguia inserir uma média de 180.000 nodes em 2s;
+  * Uma busca por ID no MongoDB demostrou uma eficiência de 1.099.788 ns/op para ID=1;
+  * Depois de pouco mais de 39 milhões nodes inseridos, o código perdeu eficiência e passou a inserir aproximadamente 80.000 nodes em 2s;
+  * Uma busca por ID no MongoDB demostrou uma eficiência de 1.088.285 ns/op para ID=39 milhões;
 
 ### Solução
 
@@ -161,7 +167,9 @@ sempre limitada a um bloco de tamanho fixo, definido na criação do arquivo bin
 
 ### Resultado
 
-O tempo total de processamento foi reduzido em mais de 10x
+Depois de preenchido, com mais de 7.9 trilhões de nodes, a busca binária teve uma eficiência de 9.390 ns/op (~100x mais eficiente) **
+
+> ** Foram usados 2048 IDs escolhidos aleatoriamente e o bloco de amostras configurado para 1024 itens por bloco.
 
 ### Exemplo
 
