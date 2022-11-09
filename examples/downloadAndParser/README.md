@@ -26,7 +26,7 @@ up.
 +------------------------------------------------------------+--------------------------------------------------------+
 ```
 
-> * ~1 trillion nodes; ~7.9 trillion nodes;
+> * ~1 trillion nodes; ** ~7.9 trillion nodes; *** _id is node.ID 
 
 ### Solution
 
@@ -115,7 +115,7 @@ banco de dados é preenchido.
 +------------------------------------------------------------+--------------------------------------------------------+
 ```
 
-> * ~1 trilhão de nodes; ** ~7.9 trilhões de nodes;
+> * ~1 trilhão de nodes; ** ~7.9 trilhões de nodes; *** _id é node.ID
 
 ### Solução
 

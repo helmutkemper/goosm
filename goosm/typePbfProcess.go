@@ -5,11 +5,9 @@ import (
 	"fmt"
 	"github.com/qedus/osmpbf"
 	"io"
-	"io/fs"
 	"log"
 	"os"
 	"runtime"
-	"strconv"
 	"time"
 )
 
@@ -797,20 +795,10 @@ func (e *PbfProcess) DeleteThisCode(osmFilePath string) (nodes, ways uint64, err
 		return
 	}
 
-	writeHeaders := true
-	nodeList := make([]Node, 0)
 	lon := 0.0
 	lat := 0.0
 	wayList := make([]Way, 0)
 	counter := 0
-
-	var f *os.File
-	f, err = os.OpenFile("time.csv", os.O_CREATE|os.O_WRONLY, fs.ModePerm)
-	if err != nil {
-		return
-	}
-	var counterCsv int64 = 0
-
 	tmpNode := Node{}
 
 	for {
@@ -826,75 +814,11 @@ func (e *PbfProcess) DeleteThisCode(osmFilePath string) (nodes, ways uint64, err
 			case *osmpbf.Node:
 
 				e.totalOfNodesInTmpFile++
-
-				if converted.Info.Visible && len(converted.Tags) != 0 {
-
-					if len(converted.Tags) != 0 {
-						node := Node{}
-						node.Init(converted.ID, converted.Lon, converted.Lat, &converted.Tags)
-
-						nodeList = append(nodeList, node)
-						if len(nodeList) == 100 {
-							start := time.Now()
-							err = e.databaseNode.SetMany(&nodeList)
-							if err != nil {
-								err = fmt.Errorf("PbfProcess.CompleteParser().SetMany().Error: %v", err)
-								return
-							}
-							_, err = f.WriteString(strconv.FormatInt(time.Since(start).Nanoseconds(), 10) + "," + strconv.FormatInt(counterCsv, 10) + "\n")
-							if err != nil {
-								return
-							}
-							counterCsv += 100
-
-							nodeList = make([]Node, 0)
-						}
-					}
-				}
+				continue
 
 			case *osmpbf.Way:
 
 				e.totalOfWaysInTmpFile++
-
-				if writeHeaders {
-					writeHeaders = false
-
-					err = e.compress.WriteFileHeaders()
-					if err != nil {
-						err = fmt.Errorf("PbfProcess.CompleteParser().WriteFileHeaders().Error: %v", err)
-						return
-					}
-
-					err = e.compress.MountIndexIntoFile()
-					if err != nil {
-						err = fmt.Errorf("PbfProcess.CompleteParser().MountIndexIntoFile().Error: %v", err)
-						return
-					}
-
-					err = e.compress.ReadFileHeaders()
-					if err != nil {
-						err = fmt.Errorf("PbfProcess.CompleteParser().ReadFileHeaders().Error: %v", err)
-						return
-					}
-
-					err = e.compress.IndexToMemory()
-					if err != nil {
-						err = fmt.Errorf("PbfProcess.CompleteParser().IndexToMemory().Error: %v", err)
-						return
-					}
-				}
-
-				// English: The amount of data in the planetary file is very large and comparing with nil is faster.
-				// Português: A quantidade de dados no arquivo planetário é muito grande e comparar com nil é mais rápido.
-				if nodeList != nil && len(nodeList) != 0 { //nolint:gosimple
-					err = e.databaseNode.SetMany(&nodeList)
-					if err != nil {
-						err = fmt.Errorf("PbfProcess.CompleteParser().SetMany().Error: %v", err)
-						return
-					}
-
-					nodeList = nil
-				}
 
 				if !converted.Info.Visible {
 					continue
