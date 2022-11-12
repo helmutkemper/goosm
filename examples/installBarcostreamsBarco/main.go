@@ -21,12 +21,8 @@ func main() {
 		panic(err)
 	}
 
-	// English: Create the MongoDB installation folder
-	// Português: Cria a pasta de instalação do MongoDB
-	//_ = os.MkdirAll("./docker/mongodb/data/db", fs.ModePerm)
-
-	// English: Install MongoDB on docker
-	// Português: Instala o MongoDB no docker
+	// English: Install Barco on docker
+	// Português: Instala o Barco no docker
 	err = DockerSupport()
 	if err != nil {
 		panic(err)
@@ -39,19 +35,19 @@ func main() {
 //
 // Removes docker elements that may be left over from previous tests. Any docker element with the term "delete" in the name;
 // Install a docker network at address 10.0.0.1 on the computer's network connector;
-// Download and install mongodb:latest in docker.
+// Download and install Barco:latest in docker.
 //
 //	Note:
-//	  * The mongodb:latest image is not removed at the end of the tests so that they can be repeated more easily
+//	  * The Barco:latest image is not removed at the end of the tests so that they can be repeated more easily
 //
 // Português:
 //
 // Remove elementos docker que possam ter ficados de testes anteriores. Qualquer elemento docker com o termo "delete" no nome;
 // Instala uma rede docker no endereço 10.0.0.1 no conector de rede do computador;
-// Baixa e instala o mongodb:latest no docker
+// Baixa e instala o Barco:latest no docker
 //
 //	Nota:
-//	  * A imagem mongodb:latest não é removida ao final dos testes para que os mesmos passam ser repetidos de forma mais fácil
+//	  * A imagem Barco:latest não é removida ao final dos testes para que os mesmos passam ser repetidos de forma mais fácil
 func DockerSupport() (err error) {
 
 	// English: Docker network controller object
@@ -69,10 +65,10 @@ func DockerSupport() (err error) {
 		return
 	}
 
-	// English: Install mongodb on docker
-	// Português: Instala o mongodb no docker
+	// English: Install Barco on docker
+	// Português: Instala o Barco no docker
 	var docker = new(dockerBuilder.ContainerBuilder)
-	err = dockerMongoDB(netDocker, docker)
+	err = dockerBarco(netDocker, docker)
 	return
 }
 
@@ -122,7 +118,7 @@ func dockerTestNetworkCreate() (
 	return
 }
 
-func dockerMongoDB(
+func dockerBarco(
 	netDocker *dockerBuilderNetwork.ContainerBuilderNetwork,
 	dockerContainer *dockerBuilder.ContainerBuilder,
 ) (
@@ -137,8 +133,8 @@ func dockerMongoDB(
 	// Português: sets the name of the image to be downloaded and installed.
 	dockerContainer.SetImageName("barcostreams/barco:latest")
 
-	// English: defines the name of the MongoDB container to be created
-	// Português: define o nome do container MongoDB a ser criado
+	// English: defines the name of the Barco container to be created
+	// Português: define o nome do container Barco a ser criado
 	dockerContainer.SetContainerName("container_delete_barcostreams_after_test")
 
 	// English: sets the value of the container's network port and the host port to be exposed
@@ -149,8 +145,8 @@ func dockerMongoDB(
 
 	dockerContainer.SetPrintBuildOnStrOut()
 
-	// English: sets MongoDB-specific environment variables (releases connections from any address)
-	// Português: define variáveis de ambiente específicas do MongoDB (libera conexões de qualquer endereço)
+	// English: sets Barco-specific environment variables (releases connections from any address)
+	// Português: define variáveis de ambiente específicas do Barco (libera conexões de qualquer endereço)
 	dockerContainer.SetEnvironmentVar(
 		[]string{
 			"BARCO_DEV_MODE=true",
@@ -169,19 +165,19 @@ func dockerMongoDB(
 	// Português: inicializa o objeto de controle docker
 	err = dockerContainer.Init()
 	if err != nil {
-		err = fmt.Errorf("dockerMongoDB.error: the function dockerContainer.Init() returned an error: %v", err)
+		err = fmt.Errorf("dockerBarco.error: the function dockerContainer.Init() returned an error: %v", err)
 		return
 	}
 
 	//err = dockerContainer.ImagePull()
 	//if err != nil {
-	//	err = fmt.Errorf("dockerMongoDB.error: the function dockerContainer.ImagePull() returned an error: %v", err)
+	//	err = fmt.Errorf("dockerBarco.error: the function dockerContainer.ImagePull() returned an error: %v", err)
 	//	return
 	//}
 
 	_, err = dockerContainer.ImageBuildFromServer()
 	if err != nil {
-		err = fmt.Errorf("dockerMongoDB.error: the function dockerContainer.ImagePull() returned an error: %v", err)
+		err = fmt.Errorf("dockerBarco.error: the function dockerContainer.ImagePull() returned an error: %v", err)
 		return
 	}
 
@@ -189,7 +185,7 @@ func dockerMongoDB(
 	// Português: monta o container
 	err = dockerContainer.ContainerBuildAndStartFromImage()
 	if err != nil {
-		err = fmt.Errorf("dockerMongoDB.error: the function dockerContainer.ContainerBuildAndStartFromImage() returned an error: %v", err)
+		err = fmt.Errorf("dockerBarco.error: the function dockerContainer.ContainerBuildAndStartFromImage() returned an error: %v", err)
 		return
 	}
 
