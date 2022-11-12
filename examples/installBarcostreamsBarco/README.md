@@ -2,8 +2,7 @@
 
 ## English
 
-This example installs **MongoDB** on port **27016** and the data folder at address
-`docker/mongodb/data` using **golang** and **docker**.
+This example installs **Barco** on ports **2950**, **2951** and **2952** using **golang** and **docker**.
 
 #### Requirements:
 
@@ -17,8 +16,7 @@ This example installs **MongoDB** on port **27016** and the data folder at addre
 
 ## Português
 
-Este exemplo instala o **MongoDB** na porta **27016** e a pasta de dados no endereço
-`docker/mongodb/data` usando o **golang** e o **docker**. 
+Este exemplo instala o **Barco** na porta **2950**, **2951** e **2952** usando o **golang** e o **docker**. 
 
 #### Requisitos:
 
