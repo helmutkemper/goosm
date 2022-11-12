@@ -1,4 +1,4 @@
-# Install MongoDB (no ephemeral)
+# Install Barco
 
 ## English
 
