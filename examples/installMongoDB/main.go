@@ -174,6 +174,12 @@ func dockerMongoDB(
 		return
 	}
 
+	err = dockerContainer.ImagePull()
+	if err != nil {
+		err = fmt.Errorf("dockerMongoDB.error: the function dockerContainer.ImagePull() returned an error: %v", err)
+		return
+	}
+
 	// English: build a container
 	// Português: monta o container
 	err = dockerContainer.ContainerBuildAndStartFromImage()
