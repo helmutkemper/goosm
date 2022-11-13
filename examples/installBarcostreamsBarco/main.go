@@ -84,6 +84,14 @@ func DockerSupport() (err error) {
 	}
 
 	for i := int64(0); i != 3; i += 1 {
+		err = docker[i].ContainerStartAfterBuild()
+		if err != nil {
+			err = fmt.Errorf("DockerSupport().error: the function ContainerStartAfterBuild() returned an error: %v", err)
+			return
+		}
+	}
+
+	for i := int64(0); i != 3; i += 1 {
 		docker[i].StartMonitor()
 		chanList[i] = docker[i].GetChaosEvent()
 	}
@@ -192,15 +200,19 @@ func dockerBarco(
 	// Português: define a rede docker
 	dockerContainer.SetNetworkDocker(netDocker)
 
+	dockerContainer.SetCacheEnable(true)
+	dockerContainer.SetImageCacheName("barco:latest")
+	dockerContainer.SetImageExpirationTime(120 * time.Minute)
+
 	dockerContainer.SetSceneNameOnChaosScene("barco")
 
 	// English: define o nome da imagem a ser baixada e instalada.
 	// Português: sets the name of the image to be downloaded and installed.
-	dockerContainer.SetImageName("barcostreams/barco:latest")
+	dockerContainer.SetImageName("barco:latest")
 
 	// English: defines the name of the Barco container to be created
 	// Português: define o nome do container Barco a ser criado
-	dockerContainer.SetContainerName("container_delete_barcostreams_after_test_" + strconv.FormatInt(key, 10))
+	dockerContainer.SetContainerName("delete_barco_" + strconv.FormatInt(key, 10))
 
 	if key == 0 {
 		// English: sets the value of the container's network port and the host port to be exposed
@@ -216,17 +228,25 @@ func dockerBarco(
 	// Português: define variáveis de ambiente específicas do Barco (libera conexões de qualquer endereço)
 	dockerContainer.SetEnvironmentVar(
 		[]string{
-			"BARCO_DEV_MODE=true",
+			//"BARCO_DEV_MODE=true",
+			"BARCO_SHUTDOWN_DELAY_SECS=0",
+			"BARCO_CONSUMER_ADD_DELAY_MS=5000",
+			"BARCO_SEGMENT_FLUSH_INTERVAL_MS=500",
+			"BARCO_BROKER_NAMES=delete_barco_0,delete_barco_1,delete_barco_2",
+			"BARCO_ORDINAL=" + strconv.FormatInt(key, 10),
 		},
 	)
 
+	//dockerContainer.SetBuildFolderPath("/Users/kemper/go/projetos/barco")
 	dockerContainer.SetGitCloneToBuild("https://github.com/barcostreams/barco.git")
 
 	dockerContainer.AddFileToServerBeforeBuild("Dockerfile", "./examples/installBarcostreamsBarco/Dockerfile-iotmaker")
+	dockerContainer.AddFileToServerBeforeBuild("internal/localdb/client.go", "./examples/installBarcostreamsBarco/client")
 
 	// English: defines a text to be searched for in the standard output of the container indicating the end of the installation
 	// define um texto a ser procurado na saída padrão do container indicando o fim da instalação
-	dockerContainer.SetWaitStringWithTimeout(`"message":"Barco started"}`, 60*time.Second)
+	//dockerContainer.SetWaitStringWithTimeout(`"message":"Barco started"}`, 60*time.Second)
+	dockerContainer.SetWaitStringWithTimeout(`"Starting Barco"`, 60*time.Second)
 
 	// English: Defines the probability of the container restarting and changing the IP address in the process.
 	//
@@ -236,27 +256,27 @@ func dockerBarco(
 	// English: Defines a time window used to start chaos testing after container initialized
 	//
 	// Português: Define uma janela de tempo usada para começar o teste de caos depois do container inicializado
-	dockerContainer.SetTimeToStartChaosOnChaosScene(30*time.Second, 90*time.Second)
+	dockerContainer.SetTimeToStartChaosOnChaosScene(10*time.Second, 30*time.Second)
 
 	// English: Sets a time window used to release container restart after the container has been initialized
 	//
 	// Português: Define uma janela de tempo usada para liberar o reinício do container depois do container ter sido inicializado
-	dockerContainer.SetTimeBeforeStartChaosInThisContainerOnChaosScene(30*time.Second, 90*time.Second)
+	dockerContainer.SetTimeBeforeStartChaosInThisContainerOnChaosScene(10*time.Second, 30*time.Second)
 
 	// English: Defines a time window used to pause the container
 	//
 	// Português: Define uma janela de tempo usada para pausar o container
-	dockerContainer.SetTimeOnContainerPausedStateOnChaosScene(30*time.Second, 90*time.Second)
+	dockerContainer.SetTimeOnContainerPausedStateOnChaosScene(10*time.Second, 30*time.Second)
 
 	// English: Defines a time window used to unpause the container
 	//
 	// Português: Define uma janela de tempo usada para remover a pausa do container
-	dockerContainer.SetTimeOnContainerUnpausedStateOnChaosScene(30*time.Second, 90*time.Second)
+	dockerContainer.SetTimeOnContainerUnpausedStateOnChaosScene(10*time.Second, 30*time.Second)
 
 	// English: Sets a time window used to restart the container after stopping
 	//
 	// Português: Define uma janela de tempo usada para reiniciar o container depois de parado
-	dockerContainer.SetTimeToRestartThisContainerAfterStopEventOnChaosScene(30*time.Second, 90*time.Second)
+	dockerContainer.SetTimeToRestartThisContainerAfterStopEventOnChaosScene(10*time.Second, 30*time.Second)
 
 	dockerContainer.EnableChaosScene(true)
 
@@ -282,7 +302,7 @@ func dockerBarco(
 
 	// English: build a container
 	// Português: monta o container
-	err = dockerContainer.ContainerBuildAndStartFromImage()
+	err = dockerContainer.ContainerBuildWithoutStartingItFromImage()
 	if err != nil {
 		err = fmt.Errorf("dockerBarco.error: the function dockerContainer.ContainerBuildAndStartFromImage() returned an error: %v", err)
 		return
