@@ -251,7 +251,7 @@ func dockerBarco(
 	// English: Defines the probability of the container restarting and changing the IP address in the process.
 	//
 	// Português: Define a probalidade do container reiniciar e mudar o endereço IP no processo.
-	dockerContainer.SetRestartProbability(0.9, 1.0, 1)
+	dockerContainer.SetRestartProbability(0.9, 1.0, 99999999)
 
 	// English: Defines a time window used to start chaos testing after container initialized
 	//
