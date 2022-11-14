@@ -59,8 +59,9 @@ func DockerSupport() (err error) {
 	// English: Remove residual docker elements from previous tests (network, images, containers with the term `delete` in the name)
 	// Português: Remove elementos docker residuais de testes anteriores (Rede, imagens, containers com o termo `delete` no nome)
 	dockerBuilder.SaGarbageCollector()
+	dockerBuilder.SaGarbageCollector("barco")
 
-	dockerBuilder.ConfigChaosScene("barco", 1, 0, 2)
+	dockerBuilder.ConfigChaosScene("barco", 1, 1, 2)
 
 	// English: Create a docker network (as the gateway is 10.0.0.1, the first address will be 10.0.0.2)
 	// Português: Cria uma rede docker (como o gateway é 10.0.0.1, o primeiro endereço será 10.0.0.2)
@@ -97,6 +98,14 @@ func DockerSupport() (err error) {
 	}
 
 	event := mergeChannels(chanList...)
+
+	testTimeout := time.NewTimer(60 * time.Minute)
+	go func(testTimeout *time.Timer, docker *dockerBuilder.ContainerBuilder) {
+		<-testTimeout.C
+		var event = docker.GetChaosEvent()
+		event <- dockerBuilder.Event{Done: true}
+	}(testTimeout, docker[0])
+
 	for {
 		e := <-event
 
@@ -296,7 +305,7 @@ func dockerBarco(
 
 	_, err = dockerContainer.ImageBuildFromServer()
 	if err != nil {
-		err = fmt.Errorf("dockerBarco.error: the function dockerContainer.ImagePull() returned an error: %v", err)
+		err = fmt.Errorf("dockerBarco.error: the function dockerContainer.ImageBuildFromServer() returned an error: %v", err)
 		return
 	}
 

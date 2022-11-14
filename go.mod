@@ -3,7 +3,7 @@ module goosm
 go 1.17
 
 require (
-	github.com/helmutkemper/iotmaker.docker.builder v1.0.53
+	github.com/helmutkemper/iotmaker.docker.builder v1.0.54
 	github.com/helmutkemper/iotmaker.docker.builder.network v0.0.0-20210517125645-e0b15cc3b594
 	github.com/qedus/osmpbf v1.2.0
 	go.mongodb.org/mongo-driver v1.11.0
