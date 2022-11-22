@@ -58,7 +58,7 @@ const (
 	// Português:
 	//
 	// Endereço do cabeçalho contendo o tamanho do espaçamento entre os blocos de endereço na busca binária
-	headerBlockSizeAddress = 8 + 8
+	headerBlockSizeAddress = headerTotalNodesAddress + 8
 
 	// headerTotalIndexAddress
 	//
@@ -69,7 +69,7 @@ const (
 	// Português:
 	//
 	// Endereço do cabeçalho com a quantidade total de índices para a busca binária secundária
-	headerTotalIndexAddress = 8 + 8 + 8
+	headerTotalIndexAddress = headerBlockSizeAddress + 8
 
 	// headerIndexesPositionAddress
 	//
@@ -80,7 +80,7 @@ const (
 	// Português:
 	//
 	// Endereço do início dos dados de nodes
-	headerIndexesPositionAddress = 8 + 8 + 8 + 8
+	headerIndexesPositionAddress = headerTotalIndexAddress + 8
 
 	// headerVersion
 	//
@@ -648,6 +648,11 @@ func (e *Compress) Close() {
 //	    Caso o bit mais significativo seja 1, o número é negativo, caso contrário, positivo.
 //	  * A compactação de coordenada em 4 bytes gera um ganho de tempo considerável e compacta o arquivo final.
 func (e *Compress) WriteNode(id int64, longitude, latitude float64) (err error) {
+	if id < 1 {
+		err = errors.New("id must be greater than zero")
+		return
+	}
+
 	if id <= e.lastID {
 		err = errors.New("id must be entered in ascending order and must not be repeated")
 		return
@@ -755,46 +760,34 @@ func (e *Compress) FindNodeByID(id int64) (longitude, latitude float64, err erro
 		i--
 	}
 
+	// English: Occurs when the amount of total data is less than the block size
+	// Português: Ocorre quando a quantidade de dados totais é menor do que tamanho do bloco
+	if len(e.memory)-1 < i+1 {
+		longitude, latitude, err = e.binarySearchCoordinate(nodeDataPositionStartAtAddress, e.totalOfNodesInTmpFile*nodeDataByteSize+nodeDataPositionStartAtAddress, id)
+		return
+	}
+
 	leftBound := e.memory[i][memorySliceAddrOfAddrIntoFile]
 	rightBound := e.memory[i+1][memorySliceAddrOfAddrIntoFile]
-	longitude, latitude, err = e.binarySearch(leftBound, rightBound, id)
+	longitude, latitude, err = e.binarySearchCoordinate(leftBound, rightBound, id)
 	if err != nil {
-		//err = fmt.Errorf("FindNodeByID().error: binarySearch(%v, %v, %v) function returned an error: %v", leftBound, rightBound, id, err)
+		//err = fmt.Errorf("FindNodeByID().error: binarySearchCoordinate(%v, %v, %v) function returned an error: %v", leftBound, rightBound, id, err)
 		return
 	}
 
 	return
 }
 
-// memoryKeyToFileAddress
-//
-// English:
-//
-// Converts the key from the binary search in memory to the address of the temporary file.
-//
-// Português:
-//
-// Converte a chave da busca binária em memória para endereço do arquivo temporário.
-//func (e *Compress) memoryKeyToFileAddress(key int) (addr int64) {
-//	return int64(key)*e.blockSize*nodeDataByteSize + nodeDataPositionStartAtAddress
-//}
-
-// binarySearch
+// binarySearchCoordinate
 //
 // English:
 //
 // Does the binary search in the temporary file.
 //
-//	Note:
-//	  * Code Based on website https://golangprojectstructure.com/super-speed-up-with-binary-search/
-//
 // Português:
 //
 // Faz a busca binária no arquivo temporário.
-//
-//	Nota:
-//	  * Baseado no código do site https://golangprojectstructure.com/super-speed-up-with-binary-search/
-func (e *Compress) binarySearch(leftBoundFileAddr, rightBoundFileAddr, nodeIdToFind int64) (longitude, latitude float64, err error) {
+func (e *Compress) binarySearchCoordinate(leftBoundFileAddr, rightBoundFileAddr, nodeIdToFind int64) (longitude, latitude float64, err error) {
 	if rightBoundFileAddr >= leftBoundFileAddr {
 		// todo: The first attempts to simplify the formula gave an error. Stayed for another day.
 		fileAddress := leftBoundFileAddr + (((rightBoundFileAddr-leftBoundFileAddr)/nodeDataByteSize)/2)*nodeDataByteSize
@@ -803,20 +796,20 @@ func (e *Compress) binarySearch(leftBoundFileAddr, rightBoundFileAddr, nodeIdToF
 		var idFound int64
 		idFound, err = e.readID(fileAddressCalculated)
 		if err != nil {
-			err = fmt.Errorf("binarySearch().error: readID(%v*(8+4+4)) function returned an error: %v", fileAddress, err)
+			err = fmt.Errorf("binarySearchCoordinate().error: readID(%v*(8+4+4)) function returned an error: %v", fileAddress, err)
 			return
 		}
 
 		if idFound == nodeIdToFind {
 			longitude, err = e.readCoordinate(fileAddressCalculated + nodeIdByteSize)
 			if err != nil {
-				err = fmt.Errorf("binarySearch().error: readCoordinate(%v*(8+4+4)+4) function returned an error: %v", fileAddress, err)
+				err = fmt.Errorf("binarySearchCoordinate().error: readCoordinate(%v*(8+4+4)+4) function returned an error: %v", fileAddress, err)
 				return
 			}
 
 			latitude, err = e.readCoordinate(fileAddressCalculated + nodeIdByteSize + nodeCoordinateByteSize)
 			if err != nil {
-				err = fmt.Errorf("binarySearch().error: readCoordinate(%v*(8+4+4)+4+4) function returned an error: %v", fileAddress, err)
+				err = fmt.Errorf("binarySearchCoordinate().error: readCoordinate(%v*(8+4+4)+4+4) function returned an error: %v", fileAddress, err)
 				return
 			}
 
@@ -824,13 +817,80 @@ func (e *Compress) binarySearch(leftBoundFileAddr, rightBoundFileAddr, nodeIdToF
 		}
 
 		if idFound > nodeIdToFind {
-			return e.binarySearch(leftBoundFileAddr, fileAddress-nodeDataByteSize, nodeIdToFind)
+			return e.binarySearchCoordinate(leftBoundFileAddr, fileAddress-nodeDataByteSize, nodeIdToFind)
 		}
 
-		return e.binarySearch(fileAddress+nodeDataByteSize, rightBoundFileAddr, nodeIdToFind)
+		return e.binarySearchCoordinate(fileAddress+nodeDataByteSize, rightBoundFileAddr, nodeIdToFind)
 	}
 
 	err = io.EOF
+	return
+}
+
+func (e *Compress) FindNextAddressByID(id int64) (address int64, err error) {
+	i := sort.Search(len(e.memory), func(i int) bool { return e.memory[i][memorySliceAddrID] >= id })
+	if i < len(e.memory) && e.memory[i][memorySliceAddrID] == id {
+
+		// English: The searched ID was found in memory and does not need to go through the file lookup.
+		// Português: O ID procurado foi encontrado na memória e não necessita passar pela busca no arquivo.
+		address = e.memory[i][memorySliceAddrOfAddrIntoFile]
+
+		idFound, _ := e.readID(address)
+		log.Printf("%v", idFound)
+		return
+	}
+
+	// English: Adjust left and right border for binary search.
+	// Português: Ajusta a borda inferior e superior para a busca binária.
+	if i > 0 {
+		i--
+	}
+
+	// English: Occurs when the amount of total data is less than the block size
+	// Português: Ocorre quando a quantidade de dados totais é menor do que tamanho do bloco
+	if len(e.memory)-1 < i+1 {
+		address, err = e.binarySearchAddress(nodeDataPositionStartAtAddress, e.totalOfNodesInTmpFile*nodeDataByteSize+nodeDataPositionStartAtAddress, id)
+		return
+	}
+
+	leftBound := e.memory[i][memorySliceAddrOfAddrIntoFile]
+	rightBound := e.memory[i+1][memorySliceAddrOfAddrIntoFile]
+	address, err = e.binarySearchAddress(leftBound, rightBound, id)
+	if err != nil {
+		//err = fmt.Errorf("FindNodeByID().error: binarySearchCoordinate(%v, %v, %v) function returned an error: %v", leftBound, rightBound, id, err)
+		return
+	}
+
+	idFound, _ := e.readID(address)
+	log.Printf("%v", idFound)
+	return
+}
+
+func (e *Compress) binarySearchAddress(leftBoundFileAddr, rightBoundFileAddr, nodeIdToFind int64) (address int64, err error) {
+	// todo: The first attempts to simplify the formula gave an error. Stayed for another day.
+	address = leftBoundFileAddr + (((rightBoundFileAddr-leftBoundFileAddr)/nodeDataByteSize)/2)*nodeDataByteSize
+
+	if rightBoundFileAddr >= leftBoundFileAddr {
+		var idFound int64
+		idFound, err = e.readID(address)
+		if err != nil {
+			err = fmt.Errorf("binarySearchCoordinate().error: readID(%v*(8+4+4)) function returned an error: %v", address, err)
+			return
+		}
+
+		if idFound == nodeIdToFind {
+			return
+		}
+
+		if idFound > nodeIdToFind {
+			address, err = e.binarySearchAddress(leftBoundFileAddr, address-nodeDataByteSize, nodeIdToFind)
+			return
+		}
+
+		address, err = e.binarySearchAddress(address+nodeDataByteSize, rightBoundFileAddr, nodeIdToFind)
+		return
+	}
+
 	return
 }
 
