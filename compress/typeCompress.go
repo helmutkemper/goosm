@@ -827,6 +827,15 @@ func (e *Compress) binarySearchCoordinate(leftBoundFileAddr, rightBoundFileAddr,
 	return
 }
 
+// FindNextAddressByID
+//
+// English:
+//
+// # Returns the address from where the ID will be inserted
+//
+// Português:
+//
+// Devolve o endereço de onde o ID será inserido
 func (e *Compress) FindNextAddressByID(id int64) (address int64, err error) {
 	i := sort.Search(len(e.memory), func(i int) bool { return e.memory[i][memorySliceAddrID] >= id })
 	if i < len(e.memory) && e.memory[i][memorySliceAddrID] == id {
@@ -835,8 +844,8 @@ func (e *Compress) FindNextAddressByID(id int64) (address int64, err error) {
 		// Português: O ID procurado foi encontrado na memória e não necessita passar pela busca no arquivo.
 		address = e.memory[i][memorySliceAddrOfAddrIntoFile]
 
-		idFound, _ := e.readID(address)
-		log.Printf("%v", idFound)
+		//idFound, _ := e.readID(address)
+		//log.Printf("%v", idFound)
 		return
 	}
 
