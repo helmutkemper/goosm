@@ -483,7 +483,7 @@ func (e *Compress) OpenForSearch(path string) (err error) {
 		_ = e.file.Close()
 	}
 
-	e.file, err = os.OpenFile(path, os.O_APPEND|os.O_RDONLY, fs.ModePerm)
+	e.file, err = os.OpenFile(path, os.O_RDONLY, fs.ModePerm)
 	if err != nil {
 		err = fmt.Errorf("Compress.OpenForSearch().OpenFile().Error: %v", err)
 		return

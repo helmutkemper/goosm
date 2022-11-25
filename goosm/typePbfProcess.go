@@ -744,6 +744,210 @@ func (e *PbfProcess) CompleteParser(osmFilePath string) (nodes, ways uint64, err
 	return
 }
 
+func (e *PbfProcess) DatabaseOnly(osmFilePath string) (nodes, ways uint64, err error) {
+
+	if e.compress == nil {
+		err = errors.New("PbfProcess.DatabaseOnly().error: the compression object must be defined before this function is called")
+		return
+	}
+
+	if e.downloadApi == nil {
+		err = errors.New("PbfProcess.DatabaseOnly().error: the download object must be defined before this function is called")
+		return
+	}
+
+	if e.databaseNode == nil {
+		err = errors.New("PbfProcess.DatabaseOnly().error: the databaseNode object must be defined before this function is called")
+		return
+	}
+
+	if e.databaseWay == nil {
+		err = errors.New("PbfProcess.DatabaseOnly().error: the databaseWay object must be defined before this function is called")
+		return
+	}
+
+	e.totalOfNodesInTmpFile = 0
+	e.totalOfWaysInTmpFile = 0
+
+	var osmFile *os.File
+	osmFile, err = os.Open(osmFilePath)
+	if err != nil {
+		err = fmt.Errorf("PbfProcess.DatabaseOnly().Create().Error: %v", err)
+		return
+	}
+
+	defer func() {
+		err := osmFile.Close()
+		if err != nil {
+			log.Printf("error closing main osm source file: %v", err.Error())
+		}
+	}()
+
+	osmDecoder := osmpbf.NewDecoder(osmFile)
+
+	// use more memory from the start, it is faster
+	osmDecoder.SetBufferSize(osmpbf.MaxBlobSize)
+
+	// start decoding with several goroutines, it is faster
+	err = osmDecoder.Start(runtime.GOMAXPROCS(-1))
+	if err != nil {
+		err = fmt.Errorf("PbfProcess.DatabaseOnly().Start().Error: %v", err)
+		return
+	}
+
+	writeHeaders := true
+	nodeList := make([]Node, 0)
+	lon := 0.0
+	lat := 0.0
+	wayList := make([]Way, 0)
+	counter := 0
+
+	tmpNode := Node{}
+
+	for {
+		var osmPbfElement interface{}
+		if osmPbfElement, err = osmDecoder.Decode(); err == io.EOF {
+			err = nil
+			break
+		} else if err != nil {
+			err = fmt.Errorf("PbfProcess.DatabaseOnly().Decode().Error: %v", err)
+			return
+		} else {
+			switch converted := osmPbfElement.(type) {
+			case *osmpbf.Node:
+
+				e.totalOfNodesInTmpFile++
+
+				if converted.Info.Visible && len(converted.Tags) != 0 {
+
+					if len(converted.Tags) != 0 {
+						node := Node{}
+						node.Init(converted.ID, converted.Lon, converted.Lat, &converted.Tags)
+						node.MakeGeoJSonFeature()
+						if len(node.Tag) == 0 {
+							continue
+						}
+
+						nodeList = append(nodeList, node)
+						if len(nodeList) == 100 {
+							err = e.databaseNode.SetMany(&nodeList)
+							if err != nil {
+								err = fmt.Errorf("PbfProcess.DatabaseOnly().SetMany().Error: %v", err)
+								return
+							}
+
+							nodeList = make([]Node, 0)
+						}
+					}
+				}
+
+			case *osmpbf.Way:
+
+				e.totalOfWaysInTmpFile++
+
+				if writeHeaders {
+					writeHeaders = false
+
+					err = e.compress.ReadFileHeaders()
+					if err != nil {
+						err = fmt.Errorf("PbfProcess.DatabaseOnly().ReadFileHeaders().Error: %v", err)
+						return
+					}
+
+					err = e.compress.IndexToMemory()
+					if err != nil {
+						err = fmt.Errorf("PbfProcess.DatabaseOnly().IndexToMemory().Error: %v", err)
+						return
+					}
+				}
+
+				// English: The amount of data in the planetary file is very large and comparing with nil is faster.
+				// Português: A quantidade de dados no arquivo planetário é muito grande e comparar com nil é mais rápido.
+				if nodeList != nil && len(nodeList) != 0 { //nolint:gosimple
+					err = e.databaseNode.SetMany(&nodeList)
+					if err != nil {
+						err = fmt.Errorf("PbfProcess.DatabaseOnly().SetMany().Error: %v", err)
+						return
+					}
+
+					nodeList = nil
+				}
+
+				if !converted.Info.Visible {
+					continue
+				}
+
+				way := Way{}
+				way.Id = converted.ID
+				way.Loc = make([][2]float64, len(converted.NodeIDs))
+				//way.IdList = converted.NodeIDs
+				way.Tag = converted.Tags
+
+				for nodeKey, nodeID := range converted.NodeIDs {
+					lon, lat, err = e.compress.FindNodeByID(nodeID)
+
+					// English: downloads points not present in binary file
+					// Português: faz o download de pontos não presentes no arquivo binário
+					if err != nil && err == io.EOF {
+						log.Printf("PbfProcess.DatabaseOnly().event: download ID: %v", nodeID)
+						tmpNode, err = e.downloadApi.DownloadNode(nodeID)
+						if err != nil {
+							err = fmt.Errorf("PbfProcess.DatabaseOnly().DownloadNode().Error: %v", err)
+							return
+						}
+						lon = tmpNode.Loc[Longitude]
+						lat = tmpNode.Loc[Latitude]
+					}
+
+					if err != nil {
+						err = fmt.Errorf("PbfProcess.DatabaseOnly().FindNodeByID().Error: %v", err)
+						return
+					}
+
+					way.Loc[nodeKey] = [2]float64{lon, lat}
+				}
+
+				err = way.Init()
+				if err != nil {
+					err = fmt.Errorf("PbfProcess.DatabaseOnly().Init().Error: %v", err)
+					return
+				}
+				way.MakeGeoJSonFeature()
+
+				wayList = append(wayList, way)
+				counter++
+
+				if counter == 100 {
+					err = e.databaseWay.SetMany(&wayList)
+					// todo: em caso de erro, inserir um por um e devolver os ways com erro
+					if err != nil {
+						err = fmt.Errorf("PbfProcess.DatabaseOnly().SetMany(1).Error: %v", err)
+						return
+					}
+					counter = 0
+					wayList = make([]Way, 0)
+				}
+
+			case *osmpbf.Relation:
+
+				err = e.databaseWay.SetMany(&wayList)
+				if err != nil {
+					err = fmt.Errorf("PbfProcess.DatabaseOnly().SetMany(2).Error: %v", err)
+					return
+				}
+
+			default:
+				err = errors.New("PbfProcess.DatabaseOnly().error: formato de dado não previsto no arquivo pbf do open street maps")
+				return
+			}
+		}
+	}
+
+	ways = e.totalOfWaysInTmpFile
+	nodes = e.totalOfNodesInTmpFile
+	return
+}
+
 // BinaryNodeOnlyParser
 //
 // English:
