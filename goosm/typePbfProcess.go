@@ -795,7 +795,6 @@ func (e *PbfProcess) DatabaseOnly(osmFilePath string) (nodes, ways uint64, err e
 		return
 	}
 
-	writeHeaders := true
 	nodeList := make([]Node, 0)
 	lon := 0.0
 	lat := 0.0
@@ -844,22 +843,6 @@ func (e *PbfProcess) DatabaseOnly(osmFilePath string) (nodes, ways uint64, err e
 			case *osmpbf.Way:
 
 				e.totalOfWaysInTmpFile++
-
-				if writeHeaders {
-					writeHeaders = false
-
-					err = e.compress.ReadFileHeaders()
-					if err != nil {
-						err = fmt.Errorf("PbfProcess.DatabaseOnly().ReadFileHeaders().Error: %v", err)
-						return
-					}
-
-					err = e.compress.IndexToMemory()
-					if err != nil {
-						err = fmt.Errorf("PbfProcess.DatabaseOnly().IndexToMemory().Error: %v", err)
-						return
-					}
-				}
 
 				// English: The amount of data in the planetary file is very large and comparing with nil is faster.
 				// Português: A quantidade de dados no arquivo planetário é muito grande e comparar com nil é mais rápido.

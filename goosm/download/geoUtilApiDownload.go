@@ -2,6 +2,7 @@ package downloadApiV06
 
 import (
 	"encoding/xml"
+	"fmt"
 	"goosm/goosm"
 	"io"
 	"net/http"
@@ -112,23 +113,27 @@ func (e DownloadApiV06) DownloadNode(id int64) (node goosm.Node, err error) {
 	var data []byte
 	data, err = e.download(id, "node")
 	if err != nil {
+		err = fmt.Errorf("downloadApiV06.DownloadNode().download(%v, %v).error: %v", id, "node", err)
 		return
 	}
 
 	var nodeXml osmNode
 	err = xml.Unmarshal(data, &nodeXml)
 	if err != nil {
+		err = fmt.Errorf("downloadApiV06.DownloadNode().Unmarshal().error: %v", err)
 		return
 	}
 
 	var longitude, latitude float64
 	longitude, err = strconv.ParseFloat(nodeXml.Node.Lon, 64)
 	if err != nil {
+		err = fmt.Errorf("downloadApiV06.DownloadNode().ParseFloat(0).error: %v", err)
 		return
 	}
 
 	latitude, err = strconv.ParseFloat(nodeXml.Node.Lat, 64)
 	if err != nil {
+		err = fmt.Errorf("downloadApiV06.DownloadNode().ParseFloat(1).error: %v", err)
 		return
 	}
 
@@ -157,6 +162,7 @@ func (e DownloadApiV06) DownloadWay(id int64) (way goosm.Way, err error) {
 	var nodeID int64
 	var data []byte
 	data, err = e.download(id, "way")
+	err = fmt.Errorf("downloadApiV06.DownloadWay().download(%v, %v).error: %v", id, "way", err)
 	if err != nil {
 		return
 	}
@@ -164,6 +170,7 @@ func (e DownloadApiV06) DownloadWay(id int64) (way goosm.Way, err error) {
 	var wayXml osmWay
 	err = xml.Unmarshal(data, &wayXml)
 	if err != nil {
+		err = fmt.Errorf("downloadApiV06.DownloadWay().Unmarshal().error: %v", err)
 		return
 	}
 
@@ -171,11 +178,13 @@ func (e DownloadApiV06) DownloadWay(id int64) (way goosm.Way, err error) {
 	for nodeKey, nodeRef := range wayXml.Way.NodeIdList {
 		nodeID, err = strconv.ParseInt(nodeRef.Ref, 10, 64)
 		if err != nil {
+			err = fmt.Errorf("downloadApiV06.DownloadWay().ParseInt().error: %v", err)
 			return
 		}
 
 		node, err = e.DownloadNode(nodeID)
 		if err != nil {
+			err = fmt.Errorf("downloadApiV06.DownloadWay().DownloadNode(%v).error: %v", nodeID, err)
 			return
 		}
 
@@ -188,6 +197,10 @@ func (e DownloadApiV06) DownloadWay(id int64) (way goosm.Way, err error) {
 	}
 	way.Tag = tags
 	err = way.Init()
+	if err != nil {
+		err = fmt.Errorf("downloadApiV06.DownloadWay().way.Init().error: %v", err)
+		return
+	}
 
 	return
 }
