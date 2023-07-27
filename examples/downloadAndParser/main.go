@@ -5,6 +5,7 @@ import (
 	"goosm/compress"
 	"goosm/goosm"
 	downloadApiV06 "goosm/goosm/download"
+	"goosm/module/util"
 	"goosm/plugin/mongodb"
 	"io"
 	"io/fs"
@@ -28,8 +29,8 @@ func main() {
 	var timeout = 10 * time.Second
 	var terminalInterval = 2000 * time.Millisecond
 	var fileDownloadName = "http://download.geofabrik.de/south-america/brazil/sul-latest.osm.pbf"
-	var fileSaveName = "../commonFiles/sul-latest.osm.pbf"
-	var fileTmpName = "../commonFiles/sul-latest.tmp"
+	var fileSaveName = "./commonFiles/sul-latest.osm.pbf"
+	var fileTmpName = "./commonFiles/sul-latest.tmp"
 
 	fmt.Println("Starting file download. This may take a while. It's ~300MB.")
 

@@ -1,19 +1,49 @@
 package main
 
 import (
+	"fmt"
 	"goosm/compress"
+	"goosm/module/util"
 	"math/rand"
+	"os"
 	"testing"
 	"time"
 )
 
+// BenchmarkFindNodeById
+//
+// # English:
+//
+// Before using this test, please note that the code will hang for several minutes, as if the code is stuck, but this is normal.
+//
+// On my local machine, this example takes about eight minutes.
+//
+// # Português:
+//
+// Antes de usar este teste, por favor, perceba que o código vai ficar parado por vários minutos, como se o código estivesse travado, mas, isto é normal.
+//
+// Na minha máquina local, este exemplo leva em torno de oito minutos.
 func BenchmarkFindNodeById(b *testing.B) {
 	var err error
+
+	// change main dir to open 'commonFiles' folder
+	err = util.ChangeRootDir("commonFiles")
+	if err != nil {
+		b.Fatalf("util.ChangeRootDir().error: %v", err)
+	}
+
+	if _, err := os.Stat("./commonFiles/node.planet.tmp"); err != nil {
+		if os.IsNotExist(err) {
+			b.Fatalf("The node.planet.tmp file does not exist and must be generated. Please use the 'downloadAndParser' example before running this example")
+		} else {
+			fmt.Println("An error occurred:", err)
+		}
+	}
 
 	start := time.Now()
 	compressData := &compress.Compress{}
 	compressData.Init(1000)
-	err = compressData.OpenForSearch("../commonFiles/node.planet.tmp")
+	err = compressData.OpenForSearch("./commonFiles/node.planet.tmp")
 	if err != nil {
 		b.Errorf("%v", err)
 	}
