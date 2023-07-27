@@ -90,11 +90,11 @@ type osmRelation struct {
 
 // DownloadApiV06
 //
-// English:
+// # English:
 //
 // # Object compatible with InterfaceDownloadOsm interface
 //
-// Português:
+// # Português:
 //
 // Objeto compatível com a interface InterfaceDownloadOsm
 type DownloadApiV06 struct{}

@@ -1,4 +1,4 @@
-// Package downloadv06
+// Package downloadApiV06
 //
 // English:
 //

@@ -17,6 +17,13 @@ import (
 func main() {
 
 	var err error
+
+	// change main dir to open 'commonFiles' folder
+	err = util.ChangeRootDir("commonFiles")
+	if err != nil {
+		panic("util.ChangeRootDir().error: " + err.Error())
+	}
+
 	var done = make(chan struct{})
 	var timeout = 10 * time.Second
 	var terminalInterval = 2000 * time.Millisecond

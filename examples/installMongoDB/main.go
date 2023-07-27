@@ -4,6 +4,7 @@ import (
 	"fmt"
 	dockerBuilder "github.com/helmutkemper/iotmaker.docker.builder"
 	dockerBuilderNetwork "github.com/helmutkemper/iotmaker.docker.builder.network"
+	"goosm/module/util"
 	"io/fs"
 	"log"
 	"os"
@@ -13,18 +14,17 @@ import (
 func main() {
 	var err error
 
-	log.SetFlags(log.LstdFlags | log.Lshortfile)
-
-	// English: Defines the directory where the golang code runs
-	// Português: Define o diretório onde o código golang roda
-	err = os.Chdir("../../")
+	// change main dir to open 'commonFiles' folder
+	err = util.ChangeRootDir("commonFiles")
 	if err != nil {
-		panic(err)
+		panic("util.ChangeRootDir().error: " + err.Error())
 	}
+
+	log.SetFlags(log.LstdFlags | log.Lshortfile)
 
 	// English: Create the MongoDB installation folder
 	// Português: Cria a pasta de instalação do MongoDB
-	_ = os.MkdirAll("./docker/mongodb/data/db", fs.ModePerm)
+	_ = os.MkdirAll("./examples/docker/mongodb/data/db", fs.ModePerm)
 
 	// English: Install MongoDB on docker
 	// Português: Instala o MongoDB no docker
@@ -156,7 +156,7 @@ func dockerMongoDB(
 
 	// English: sets the host computer's "./docker/mongodb/data/db" folder to the container's "/data/db" folder, so that the database data is archived on the host computer
 	// Português: define a pasta "./docker/mongodb/data/db" do computador hospedeiro como sendo a pasta "/data/db" do container, para que os dados do banco de dados sejam arquivados no computador hospedeiro
-	err = dockerContainer.AddFileOrFolderToLinkBetweenComputerHostAndContainer("./docker/mongodb/data/db", "/data/db")
+	err = dockerContainer.AddFileOrFolderToLinkBetweenComputerHostAndContainer("./examples/docker/mongodb/data/db", "/data/db")
 	if err != nil {
 		err = fmt.Errorf("dockerMongoDB.error: the function dockerContainer.AddFileOrFolderToLinkBetweenComputerHostAndContainer() returned an error: %v", err)
 		return

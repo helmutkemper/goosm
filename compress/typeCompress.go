@@ -16,12 +16,12 @@ const (
 
 	// decimalPlaces
 	//
-	// English:
+	// # English:
 	//
 	// Used to multiply and divide longitude and latitude during floating point to integer transformation to binary
 	// conversion.
 	//
-	// Português:
+	// # Português:
 	//
 	// Usado para multiplicar e dividir longitude e latitude durante a transformação de ponto flutuante em inteiro para a
 	// conversão de binário.
@@ -29,231 +29,231 @@ const (
 
 	// headerVersionAddress
 	//
-	// English:
+	// # English:
 	//
 	// Binary file version header address
 	//
-	// Português:
+	// # Português:
 	//
 	// Endereço do cabeçalho de versão do arquivo binário
 	headerVersionAddress = 0
 
 	// headerTotalNodesAddress
 	//
-	// English:
+	// # English:
 	//
 	// Header address of the total nodes contained in the binary file
 	//
-	// Português:
+	// # Português:
 	//
 	// Endereço do cabeçalho do total de nodes contidos no arquivo binário
 	headerTotalNodesAddress = 8
 
 	// headerBlockSizeAddress
 	//
-	// English:
+	// # English:
 	//
 	// Header address containing spacing size between address blocks in binary search
 	//
-	// Português:
+	// # Português:
 	//
 	// Endereço do cabeçalho contendo o tamanho do espaçamento entre os blocos de endereço na busca binária
 	headerBlockSizeAddress = headerTotalNodesAddress + 8
 
 	// headerTotalIndexAddress
 	//
-	// English:
+	// # English:
 	//
 	// Header address with total number of indices for secondary binary search
 	//
-	// Português:
+	// # Português:
 	//
 	// Endereço do cabeçalho com a quantidade total de índices para a busca binária secundária
 	headerTotalIndexAddress = headerBlockSizeAddress + 8
 
 	// headerIndexesPositionAddress
 	//
-	// English:
+	// # English:
 	//
 	// Address of start of node data
 	//
-	// Português:
+	// # Português:
 	//
 	// Endereço do início dos dados de nodes
 	headerIndexesPositionAddress = headerTotalIndexAddress + 8
 
 	// headerVersion
 	//
-	// English:
+	// # English:
 	//
 	// Version text written in binary file header
 	//
-	// Português:
+	// # Português:
 	//
 	// Texto de versão escrito no cabeçalho do arquivo binário
 	headerVersion = "00000001"
 
 	// headerVersionByteSize
 	//
-	// English:
+	// # English:
 	//
 	// Number of letters counted in the version text written in the header of the binary file
 	//
-	// Português:
+	// # Português:
 	//
 	// Quantidade de letras contadas no texto de versão escrito no cabeçalho do arquivo binário
 	headerVersionByteSize = 8
 
 	// int64ByteSize
 	//
-	// English:
+	// # English:
 	//
 	// Number of bytes occupied by a 64-bit integer type number
 	//
-	// Português:
+	// # Português:
 	//
 	// Quantidade de bytes ocupada por um número do tipo inteiro de 64 bits
 	int64ByteSize = 8
 
 	// totalNodesByteSize
 	//
-	// English:
+	// # English:
 	//
 	// Number of bytes occupied by the information, total nodes contained in the binary file
 	//
-	// Português:
+	// # Português:
 	//
 	// Quantidade de bytes ocupada pela informação, total de nodes contidos no arquivo binário
 	totalNodesByteSize = int64ByteSize
 
 	// totalBlockSizeByteSize
 	//
-	// English:
+	// # English:
 	//
 	// Number of bytes occupied by the information, secondary binary search block size
 	//
-	// Português:
+	// # Português:
 	//
 	// Quantidade de bytes ocupada pela informação, tamanho do bloco da busca binária secundária
 	totalBlockSizeByteSize = int64ByteSize
 
 	// totalIndexIntoFileByteSize
 	//
-	// English:
+	// # English:
 	//
 	// Number of bytes occupied by the information, total number of indexes contained in the binary file
 	//
-	// Português:
+	// # Português:
 	//
 	// Quantidade de bytes ocupada pela informação, quantidade total de índices contido no arquivo binário
 	totalIndexIntoFileByteSize = int64ByteSize
 
 	// startIndexAddress
 	//
-	// English:
+	// # English:
 	//
 	// Number of bytes occupied by the information, starting address of secondary indexes
 	//
-	// Português:
+	// # Português:
 	//
 	// Quantidade de bytes ocupada pela informação, endereço inicial dos índices secundários
 	startIndexAddress = int64ByteSize
 
 	// nodeDataPositionStartAtAddress
 	//
-	// English:
+	// # English:
 	//
 	// Total amount of bytes to be skipped before writing node data
 	//
-	// Português:
+	// # Português:
 	//
 	// Quantidade total de bytes a ser pulada antes de escrever os dados dos nodes
 	nodeDataPositionStartAtAddress = headerVersionByteSize + totalNodesByteSize + totalBlockSizeByteSize + totalIndexIntoFileByteSize + startIndexAddress
 
 	// nodeIdByteSize
 	//
-	// English:
+	// # English:
 	//
 	// Number of bytes occupied by the node ID
 	//
-	// Português:
+	// # Português:
 	//
 	// Quantidade de bytes ocupada pelo ID do node
 	nodeIdByteSize = int64ByteSize
 
 	// nodeCoordinateByteSize
 	//
-	// English:
+	// # English:
 	//
 	// Number of bytes occupied by a geographic coordinate
 	//
-	// Português:
+	// # Português:
 	//
 	// Quantidade de bytes ocupada por uma coordenada geográfica
 	nodeCoordinateByteSize = 4
 
 	// mostSignificantBit
 	//
-	// English:
+	// # English:
 	//
 	// Position of the most significant bit when little endian is chosen when converting to binary
 	//
-	// Português:
+	// # Português:
 	//
 	// Posição do bit mais significativo quando é escolhido little endian na conversão para binário
 	mostSignificantBit = 0x80
 
 	// mostSignificantBitTwoComplements
 	//
-	// English:
+	// # English:
 	//
 	// Separated from the most significant bit
 	//
-	// Português:
+	// # Português:
 	//
 	// Separado do bit mais significativo
 	mostSignificantBitTwoComplements = 0x7F
 
 	// mostSignificantByte
 	//
-	// English:
+	// # English:
 	//
 	// Most significant byte in coordinate byte set (4 bytes), when little endian of binary is used
 	//
-	// Português:
+	// # Português:
 	//
 	// Byte mais significativo no conjunto de bytes da coordenada (4 bytes), quando é usado little endian do binário
 	mostSignificantByte = 3
 
 	// nodeDataByteSize
 	//
-	// English:
+	// # English:
 	//
 	// Total number of bytes occupied by a node
 	//
-	// Português:
+	// # Português:
 	//
 	// Quantidade total de bytes ocupado por um node
 	nodeDataByteSize = nodeIdByteSize + 2*nodeCoordinateByteSize
 
 	// memorySliceAddrID
 	//
-	// English:
+	// # English:
 	//
 	// ID address within the memory slice
 	//
-	// Português:
+	// # Português:
 	//
 	// Endereço do ID dentro do slice de memória
 	memorySliceAddrID = 0
 
 	// memorySliceAddrOfAddrIntoFile
 	//
-	// English:
+	// # English:
 	//
 	// Address, within the memory slice, containing the address of the data in the nodes file
 	//
-	// Português:
+	// # Português:
 	//
 	// Endereço, dentro do slice de memória, contendo o endereço do dado no arquivo de nodes
 	memorySliceAddrOfAddrIntoFile = 1
@@ -261,160 +261,239 @@ const (
 
 // Compress
 //
-// English:
+// # English:
+//
+//	This package stores geographic coordinates used in building OpenStreetMap in a binary file designed to be
+//	efficient in processing ways, in addition it providing an interface called for each processed way.
+//
+// The problem:
+//
+//	OpenStreetMap serves a binary file containing all the nodes, 7.9 trillion the last time I downloaded the complete
+//	world, identified by an ID and a coordinate, and then presents all the ways, containing only the node ID, which
+//	generates a search by NODE_ID for each node contained in the way, which slows down processing.
+//
+//	This package creates a binary search to optimize map processing and return a ready-to-use way.
+//
+// Geo coordinate compression for maps:
+//
+//	   On a planned map, the largest number, in number of decimal places, present on the map is +/-180˚ in longitude and
+//	   +/-90˚ in latitude, with 7 decimal places.
+//
+//		  For data compression, the floating point number of the coordinate is multiplied by 10,000,000 and then converted
+//		  to an integer, losing the decimal part, so the largest number saved is the integer +/-1,800,000,000.
+//		  With this, it can be represented by the group of four bytes X110 1011 0100 1001 1101 0010 0000 0000, where the
+//		  most significant bit, `X` is never used, and can be used to indicate positive or negative sign, that is, X= 1
+//		  represents a negative number and X=0 a positive number (the rule of two was not used).
 //
 // File format:
 //
-//	Header: 24 bytes
-//	  total of nodes in a file: 8 bytes
-//	  total block size: 8 bytes
-//	  start index address: 8 bytes
+//		Header: 24 bytes
+//	   version: 8 bytes
+//		  total of nodes in a file: 8 bytes
+//		  total block size: 8 bytes
+//	   total index into file 8 bytes
+//		  start index address: 8 bytes
 //
-//	Data block:
-//	  node.ID: 8 bytes
-//	  node.Longitude: 4 bytes
-//	  node.Latitude: 4 bytes
+//		Data block:
+//		  node.ID: 8 bytes
+//		  node.Longitude: 4 bytes
+//		  node.Latitude: 4 bytes
 //
-//	  The largest number present in a coordinate for the flat map is +-180˚ longitude and +-90˚ latitude, to 7 decimal
-//	  places.
-//	  For data compression, the floating point coordinate is multiplied by 10,000,000 and then converted to an integer,
-//	  losing the decimal part, so the largest number saved is the integer +-1,800,000,000.
-//	  Therefore, it can be represented by the group of four bytes X110 1011 0100 1001 1101 0010 0000 0000, where the
-//	  most significant bit, `X`, is never used, so it can be used to indicate a positive or negative sign, that is, X=1
-//	  represents a negative number and X=0 a positive number.
+//		Index block:
+//		  Indexes are a fixed-size block used for in-memory indexing, where a block represents the address of the node in
+//		  the file.
+//		  For example:
+//		  For the list of node ID 1 to 100 in the file, and block size 10, memory will contain the values 1, 11, 21, ...,
+//		  81, 91.
+//		  Compress.FindNodeByID(75), it will first do a `secondary binary search, in memory` search and find indices 7 and 8
+//		  for the left edge and right edge.
+//		  Applying the formula: (address * 16) + header size, 40
+//		  the left edge will have ID 71, (memory[7][0]), and address 1160, (memory[7][1]),
+//		  the right edge will have ID 81, (memory[8][0]) and address (memory[8][1]) 1320
+//		  Therefore, the ID sought will be between addresses 1160 and 1320 of the binary file on disk.
+//		  On disk, each address is 8 bytes for ID + 4 bytes for longitude + 4 bytes for latitude.
 //
-//	Index block:
-//	  Indexes are a fixed-size block used for in-memory indexing, where a block represents the node address in the file.
-//	  For example:
-//	  For the list of node ID 1 to 100, in the file, and block size 10, memory will contain the values 1, 11, 21, ...,
-//	  81, 91.
-//	  Compress.FindNodeByID(75) will find the values 7 and 8 for the bottom edge and top edge.
-//	  left border will have the ID 71, (memory[7][0]), and the address 1.160, (memory[7][1])
-//	  right border will have the ID 81, (memory[8][0]) and the address 1.320, (memory[8][1])
-//	  Therefore, the ID sought will be between addresses 1160 and 1330; And each address is 8 bytes for ID + 4 bytes
-//	  for the longitude + 4 bytes for latitude.
+// # Português:
 //
-// Português:
+//	Este pacote arquiva coordenadas geográficas usadas na construção do OpenStreetMap em um arquivo binário feito para
+//	ser eficiente no processamento de ways, além de fornecer uma interface chamada a cada way processado.
 //
-// File format:
+// O problema:
 //
-//	Header: 24 bytes
-//	  total of nodes in a file: 8 bytes
-//	  total block size: 8 bytes
-//	  start index address: 8 bytes
+//	O OpenStreetMap entrega um arquivo binário contendo todos os nodes, 7.9 trilhões a última vez que eu baixei o
+//	mundo completo, identificado por um ID e uma coordenada, e em seguida, apresenta todos os ways, contendo apenas
+//	o ID do node, oq ue gera uma busca por NODE_ID para cada node contido no way, o que deixa o processamento lento.
 //
-//	Data block:
-//	  node.ID: 8 bytes
-//	  node.Longitude: 4 bytes
-//	  node.Latitude: 4 bytes
+//	Este pacote cria uma busca binária em memória e em arquivo para otimizar o processamento do mapa e devolver um way
+//	montado e pronto para uso.
 //
-//	  O maior número presente em uma coordenada para o mapa planificado é +/-180˚ na longitude e +/-90˚ na latitude,
-//	  com 7 casas decimais.
-//	  Para a compactação de dados, o número de ponto flutuante da coordenada é multiplicado por 10.000.000 e em seguida
-//	  é convertido em inteiro, perdendo a parte decimal, logo, o maior número salvo é o inteiro +/-1.800.000.000.
-//	  Logo, pode ser representado pelo grupo de quatro bytes X110 1011 0100 1001 1101 0010 0000 0000, onde o bit mais
-//	  significativo, `X` nunca é usado, logo, pode ser usado para indicar sinal de positivo ou negativo, ou seja, X=1
-//	  representa um número negativo e X=0 um número positivo.
+// Compactação de coordenada geográfica para mapas:
 //
-//	Index block:
-//	  Índices são um bloco de tamanho fixo, usado para uma indexação em memória, onde um bloco representa o endereço do
-//	  node no arquivo.
-//	  Por exemplo:
-//	  Para a lista de node ID 1 a 100, no arquivo, e tamanho do bloco 10, memory conterá os valores 1, 11, 21, ...,
-//	  81, 91.
-//	  Compress.FindNodeByID(75) encontrará os valores 7 e 8 para a borda inferior e a borda superior. Aplicando a fórmula:
-//	  a borda esquerda terá o ID 71, (memory[7][0]), e o endereço 1.160, (memory[7][1]),
-//	  a borda direita terá o ID 81, (memory[8][0]) e o endereço (memory[8][1]) 1.320
-//	  Logo, o ID procurado estará entre os endereços 1.160 e 1320; E cada endereço tem 8 bytes para ID + 4 bytes para
-//	  a longitude + 4 bytes para a latitude.
+//	   Em um mapa planificado, o maior número, em quantidade de casas decimais, presente no mapa é +/-180˚ na longitude
+//	   e +/-90˚ na latitude, com 7 casas decimais.
+//
+//		  Para a compactação de dados, o número de ponto flutuante da coordenada é multiplicado por 10.000.000 e em seguida
+//		  é convertido em inteiro, perdendo a parte decimal, logo, o maior número salvo é o inteiro +/-1.800.000.000.
+//		  Com isto, pode ser representado pelo grupo de quatro bytes X110 1011 0100 1001 1101 0010 0000 0000, onde o bit
+//		  mais significativo, `X` nunca é usado, e pode ser usado para indicar sinal de positivo ou negativo, ou seja, X=1
+//		  representa um número negativo e X=0 um número positivo (não foi usada a regra de dois).
+//
+// Formato do arquivo:
+//
+//		Header: 24 bytes
+//	   version: 8 bytes
+//		  total of nodes in a file: 8 bytes
+//		  total block size: 8 bytes
+//	   total index into file 8 bytes
+//		  start index address: 8 bytes
+//
+//		Data block:
+//		  node.ID: 8 bytes
+//		  node.Longitude: 4 bytes
+//		  node.Latitude: 4 bytes
+//
+//		Index block:
+//		  Índices são um bloco de tamanho fixo, usado para uma indexação em memória, onde um bloco representa o endereço do
+//		  node no arquivo.
+//		  Por exemplo:
+//		  Para a lista de node ID 1 a 100, no arquivo, e tamanho do bloco 10, memory conterá os valores 1, 11, 21, ...,
+//		  81, 91.
+//		  Compress.FindNodeByID(75), primeiro fará uma busca em `secondary binary search, in memory` e encontrará os índices
+//		  7 e 8 para a borda esquerda e a borda direita.
+//		  Aplicando a fórmula: (endereço * 16) + tamanho do cabeçalho, 40
+//		  a borda esquerda terá o ID 71, (memory[7][0]), e o endereço 1.160, (memory[7][1]),
+//		  a borda direita terá o ID 81, (memory[8][0]) e o endereço (memory[8][1]) 1.320
+//		  Logo, o ID procurado estará entre os endereços 1.160 e 1.320 do arquivo binário em disco.
+//		  No disco, cada endereço tem 8 bytes para ID + 4 bytes para a longitude + 4 bytes para a latitude.
+//
+// # Drawing:
+//
+//	Drawing the binary file for better understanding:
+//	Desenhando o arquivo binário para melhor entendimento:
+//
+//	   addr:00000 version 8bytes         --+
+//	   addr:00008 total of nodes           |
+//	   addr:00016 block size               +- header, configuration
+//	   addr:00024 total of index into file |
+//	   addr:00032 start index addr       --+
+//	   ID:0001 Addr:00040                --+
+//	   ID:0002 Addr:00056                  |
+//	   ...                                 |
+//	   ...                                 |
+//	   ID:0070 Addr:01144                  |
+//	   ID:0071 Addr:01160                  |
+//	   ID:0072 Addr:01176                  |
+//	   ID:0073 Addr:01192                  |
+//	   ID:0074 Addr:01208                  |
+//	   ID:0075 Addr:01224                  +- primary binary search, on disk
+//	   ID:0076 Addr:01240                  |
+//	   ID:0077 Addr:01256                  |
+//	   ID:0078 Addr:01272                  |
+//	   ID:0079 Addr:01288                  |
+//	   ID:0080 Addr:01304                  |
+//	   ID:0081 Addr:01320                  |
+//	   ID:0082 Addr:01336                  |
+//	   ...                                 |
+//	   ...                                 |
+//	   ID:0100                           --+
+//	   ID:0001:Addr:00040                --+
+//	   ID:0011:Addr:00200                  |
+//	   ID:0021:Addr:00360                  |
+//	   ID:0031:Addr:00520                  |
+//	   ID:0041:Addr:00680                  +- secondary binary search, in memory
+//	   ID:0051:Addr:00840                  |
+//	   ID:0061:Addr:01000                  |
+//	   ID:0071:Addr:01160                  |
+//	   ID:0081:Addr:01320                  |
+//	   ID:0091:Addr:01480                --+
 type Compress struct {
 
-	// English:
+	// # English:
 	//
 	// Pointer to the temporary file.
 	//
-	// Português:
+	// # Português:
 	//
 	// Ponteiro para o arquivo temporário.
 	file *os.File
 
-	// English:
+	// # English:
 	//
 	// Checks if the entered ID is in ascending order
 	//
-	// Português:
+	// # Português:
 	//
 	// Verifica se o ID inserido esta em ordem crescente
 	lastID int64
 
-	// English:
+	// # English:
 	//
 	// 8 bytes to file uint64. Creating this variable here saves time when it comes to more than 8 billion points.
 	//
-	// Português:
+	// # Português:
 	//
 	// 8 bytes to file uint64. Creating this variable here saves time when it comes to more than 8 billion points.
 	dataFile []byte
 
-	// English:
+	// # English:
 	//
 	// 4 bytes to archive float64 compression. Creating this variable here saves time when it comes to more than 8
 	// billion points.
 	//
-	// Português:
+	// # Português:
 	//
 	// 4 bytes para arquivar a compactação de float64. Criar esta variável aqui ganha tempo quando se trata mais de 8
 	// bilhões de pontos.
 	dataCoordinate []byte
 
-	// English:
+	// # English:
 	//
 	// Write pointer to temporary file.
 	//
-	// Português:
+	// # Português:
 	//
 	// Ponteiro de escrita no arquivo temporário.
 	nodeWriteDataPosition int64
 
-	// English:
+	// # English:
 	//
 	// Read pointer to temporary file.
 	//
-	// Português:
+	// # Português:
 	//
 	// Ponteiro de leitura no arquivo temporário.
 	nodeReadDataPosition int64
 
-	// English:
+	// # English:
 	//
 	// Total nodes saved in the file.
 	//
-	// Português:
+	// # Português:
 	//
 	// Total de nodes salvos no arquivo.
 	totalOfNodesInTmpFile int64
 
-	// English:
+	// # English:
 	//
 	// Total indexes to be used in memory in the file. Affected by blockSize.
 	//
-	// Português:
+	// # Português:
 	//
 	// Total de índices para serem usados em memória no arquivo. Afetado por blockSize.
 	totalIndexIntoFile int64
 
-	// English:
+	// # English:
 	//
 	// Spacing between IDs for the in-memory key, i.e. 10 represents one data capture every 10 IDs.
 	// A low value represents greater search efficiency, but greater memory and disk consumption.
 	//
-	// Português:
+	// # Português:
 	//
 	// Espaçamento entre IDs para a chave em memória, ou seja, 10 representa uma captura de dados a cada 10 IDs.
 	// Um valor baixo representa uma maior eficiência na busca, porém, um maior consumo de memória e de disco.
 	blockSize int64
 
-	// English:
+	// # English:
 	//
 	// Receives the list of node IDs, where (key * block size * (ID size + lon size + lat size) + header size) =
 	// = node ID address.
@@ -429,7 +508,7 @@ type Compress struct {
 	//    Therefore, the ID sought will be between addresses 1160 and 1330; And each address is 8 bytes for ID + 4 bytes
 	//    for the longitude + 4 bytes for latitude.
 	//
-	// Português:
+	// # Português:
 	//
 	// Recebe a lista de IDs dos nodes, onde (chave * block size * (ID size + lon size + lat size) + header size) =
 	// = node ID address.
@@ -448,7 +527,7 @@ type Compress struct {
 
 // Init
 //
-// English:
+// # English:
 //
 // Initializes the object.
 //
@@ -459,7 +538,7 @@ type Compress struct {
 //	  * Very small values consume a lot of memory and make the file very large, but generate greater efficiency.
 //	  * For the planet file, with ~8 trillions of points, 8000000000 nodes / 1000 block size * (8 bytes per ID + 8 bytes per address) = 122MB
 //
-// Português:
+// # Português:
 //
 // Inicializa o objeto.
 //
@@ -478,6 +557,21 @@ func (e *Compress) Init(blockSize int64) {
 	e.memory = make([][2]int64, 0)
 }
 
+// OpenForSearch
+//
+// # English:
+//
+// Opens the binary file read-only and is used when only the search function is intended.
+//
+//	Input:
+//	  path: Binary file path
+//
+// # Português:
+//
+// Abre o arquivo binário apenas para leitura e é usado quando se pretende usar apenas a função de busca
+//
+//	Entrada:
+//	  path: Caminho do arquivo binário
 func (e *Compress) OpenForSearch(path string) (err error) {
 	if e.file != nil {
 		_ = e.file.Close()
@@ -506,11 +600,11 @@ func (e *Compress) OpenForSearch(path string) (err error) {
 
 // ResizeBlock
 //
-// English:
+// # English:
 //
 // # Rewrites block size of indexes and redoes in-memory search indexes
 //
-// Português:
+// # Português:
 //
 // Reescreve o tamanho do bloco de índices e refaz os índices da busca em memória
 func (e *Compress) ResizeBlock(blockSize int64) (err error) {
@@ -544,7 +638,7 @@ func (e *Compress) ResizeBlock(blockSize int64) (err error) {
 
 // Round
 //
-// English:
+// # English:
 //
 // Rounds a floating point to N decimal places
 //
@@ -552,7 +646,7 @@ func (e *Compress) ResizeBlock(blockSize int64) (err error) {
 //	  value: value to be rounded off;
 //	  places: number of decimal places. Eg. 7.0
 //
-// Português:
+// # Português:
 //
 // Rounds a floating point to N decimal places
 //
@@ -578,11 +672,11 @@ func (e *Compress) Round(value, places float64) float64 {
 
 // Create
 //
-// English:
+// # English:
 //
 // Open the temporary file.
 //
-// Português:
+// # Português:
 //
 // Abre o arquivo temporário.
 func (e *Compress) Create(path string) (err error) {
@@ -600,11 +694,11 @@ func (e *Compress) Create(path string) (err error) {
 
 // Close
 //
-// English:
+// # English:
 //
 // # Close the temporary file
 //
-// Português:
+// # Português:
 //
 // Fecha o arquivo temporário
 func (e *Compress) Close() {
@@ -616,7 +710,7 @@ func (e *Compress) Close() {
 
 // WriteNode
 //
-// English:
+// # English:
 //
 // Write node to temporary file.
 //
@@ -632,7 +726,7 @@ func (e *Compress) Close() {
 //	    If the most significant bit is 1, the number is negative, otherwise positive.
 //	  * Coordinate compression at 4 bytes saves considerable time and compresses the final file.
 //
-// Português:
+// # Português:
 //
 // Escreve o node no arquivo temporário.
 //
@@ -710,7 +804,7 @@ func (e *Compress) WriteNode(id int64, longitude, latitude float64) (err error) 
 
 // FindNodeByID
 //
-// English:
+// # English:
 //
 // Search for longitude and latitude in the temporary file.
 //
@@ -722,7 +816,7 @@ func (e *Compress) WriteNode(id int64, longitude, latitude float64) (err error) 
 //	  latitude: value between ±90 width 7 decimal places;
 //	  err: pattern object, with io.EOF error when value not found in file
 //
-// Português:
+// # Português:
 //
 // Procura por longitude e latitude no arquivo temporário.
 //
@@ -737,8 +831,8 @@ func (e *Compress) FindNodeByID(id int64) (longitude, latitude float64, err erro
 	i := sort.Search(len(e.memory), func(i int) bool { return e.memory[i][memorySliceAddrID] >= id })
 	if i < len(e.memory) && e.memory[i][memorySliceAddrID] == id {
 
-		// English: The searched ID was found in memory and does not need to go through the file lookup.
-		// Português: O ID procurado foi encontrado na memória e não necessita passar pela busca no arquivo.
+		// # English: The searched ID was found in memory and does not need to go through the file lookup.
+		// # Português: O ID procurado foi encontrado na memória e não necessita passar pela busca no arquivo.
 		fileAddressCalculated := e.memory[i][memorySliceAddrOfAddrIntoFile]
 		longitude, err = e.readCoordinate(fileAddressCalculated + nodeIdByteSize)
 		if err != nil {
@@ -754,14 +848,14 @@ func (e *Compress) FindNodeByID(id int64) (longitude, latitude float64, err erro
 		return
 	}
 
-	// English: Adjust left and right border for binary search.
-	// Português: Ajusta a borda inferior e superior para a busca binária.
+	// # English: Adjust left and right border for binary search.
+	// # Português: Ajusta a borda inferior e superior para a busca binária.
 	if i > 0 {
 		i--
 	}
 
-	// English: Occurs when the amount of total data is less than the block size
-	// Português: Ocorre quando a quantidade de dados totais é menor do que tamanho do bloco
+	// # English: Occurs when the amount of total data is less than the block size
+	// # Português: Ocorre quando a quantidade de dados totais é menor do que tamanho do bloco
 	if len(e.memory)-1 < i+1 {
 		longitude, latitude, err = e.binarySearchCoordinate(nodeDataPositionStartAtAddress, e.totalOfNodesInTmpFile*nodeDataByteSize+nodeDataPositionStartAtAddress, id)
 		return
@@ -780,11 +874,11 @@ func (e *Compress) FindNodeByID(id int64) (longitude, latitude float64, err erro
 
 // binarySearchCoordinate
 //
-// English:
+// # English:
 //
 // Does the binary search in the temporary file.
 //
-// Português:
+// # Português:
 //
 // Faz a busca binária no arquivo temporário.
 func (e *Compress) binarySearchCoordinate(leftBoundFileAddr, rightBoundFileAddr, nodeIdToFind int64) (longitude, latitude float64, err error) {
@@ -829,19 +923,19 @@ func (e *Compress) binarySearchCoordinate(leftBoundFileAddr, rightBoundFileAddr,
 
 // FindNextAddressByID
 //
-// English:
+// # English:
 //
 // # Returns the address from where the ID will be inserted
 //
-// Português:
+// # Português:
 //
 // Devolve o endereço de onde o ID será inserido
 func (e *Compress) FindNextAddressByID(id int64) (address int64, err error) {
 	i := sort.Search(len(e.memory), func(i int) bool { return e.memory[i][memorySliceAddrID] >= id })
 	if i < len(e.memory) && e.memory[i][memorySliceAddrID] == id {
 
-		// English: The searched ID was found in memory and does not need to go through the file lookup.
-		// Português: O ID procurado foi encontrado na memória e não necessita passar pela busca no arquivo.
+		// # English: The searched ID was found in memory and does not need to go through the file lookup.
+		// # Português: O ID procurado foi encontrado na memória e não necessita passar pela busca no arquivo.
 		address = e.memory[i][memorySliceAddrOfAddrIntoFile]
 
 		//idFound, _ := e.readID(address)
@@ -849,14 +943,14 @@ func (e *Compress) FindNextAddressByID(id int64) (address int64, err error) {
 		return
 	}
 
-	// English: Adjust left and right border for binary search.
-	// Português: Ajusta a borda inferior e superior para a busca binária.
+	// # English: Adjust left and right border for binary search.
+	// # Português: Ajusta a borda inferior e superior para a busca binária.
 	if i > 0 {
 		i--
 	}
 
-	// English: Occurs when the amount of total data is less than the block size
-	// Português: Ocorre quando a quantidade de dados totais é menor do que tamanho do bloco
+	// # English: Occurs when the amount of total data is less than the block size
+	// # Português: Ocorre quando a quantidade de dados totais é menor do que tamanho do bloco
 	if len(e.memory)-1 < i+1 {
 		address, err = e.binarySearchAddress(nodeDataPositionStartAtAddress, e.totalOfNodesInTmpFile*nodeDataByteSize+nodeDataPositionStartAtAddress, id)
 		return
@@ -905,7 +999,7 @@ func (e *Compress) binarySearchAddress(leftBoundFileAddr, rightBoundFileAddr, no
 
 // MountIndexIntoFile
 //
-// English:
+// # English:
 //
 // Salva os índices no arquivo temporário.
 // See the explanation on the Init() function for more details.
@@ -914,7 +1008,7 @@ func (e *Compress) binarySearchAddress(leftBoundFileAddr, rightBoundFileAddr, no
 //	  * Indexes are blocks with ranges of IDs to help calculate the address of the ID within the temporary file.
 //	  * Indexes are loaded into memory for better performance.
 //
-// Português:
+// # Português:
 //
 // Salva os índices no arquivo temporário.
 // Veja a explicação na função Init() para mais detalhes.
@@ -933,13 +1027,13 @@ func (e *Compress) MountIndexIntoFile() (err error) {
 	// place = (address - (8 + 8 + 8 + 8 + 8)) / (8 + 4 + 4)
 	// place = (address - 40) / 16
 
-	// English: points to the last node inserted.
-	// Português: aponta para o último node inserido.
+	// # English: points to the last node inserted.
+	// # Português: aponta para o último node inserido.
 	lastNodeAddr := e.nodeWriteDataPosition - nodeDataByteSize
 
-	// English: e.totalIndexIntoFile-1 the last index does not mathematically correspond to the size of the block, it
+	// # English: e.totalIndexIntoFile-1 the last index does not mathematically correspond to the size of the block, it
 	// corresponds to the last ID inserted in the file, or it will be outside the search window.
-	// Português: e.totalIndexIntoFile-1 o último índice não corresponde matematicamente ao tamanho do bloco, corresponde
+	// # Português: e.totalIndexIntoFile-1 o último índice não corresponde matematicamente ao tamanho do bloco, corresponde
 	// ao último ID inserido no arquivo, ou o mesmo ficará fora da janela de busca.
 	for i := int64(0); i != e.totalIndexIntoFile-1; i += 1 {
 		e.nodeReadDataPosition = i*e.blockSize*nodeDataByteSize + nodeDataPositionStartAtAddress
@@ -963,8 +1057,8 @@ func (e *Compress) MountIndexIntoFile() (err error) {
 		e.nodeWriteDataPosition += nodeIdByteSize
 	}
 
-	// English: Write the last node ID in the index, or the last data after the block ID will not be found in the search
-	// Português: Escreve o ID do ultimo node no índice, ou os últimos dados depois do ID do bloco não serão encontrados
+	// # English: Write the last node ID in the index, or the last data after the block ID will not be found in the search
+	// # Português: Escreve o ID do ultimo node no índice, ou os últimos dados depois do ID do bloco não serão encontrados
 	// na busca
 	_, err = e.file.ReadAt(e.dataFile, lastNodeAddr)
 	if err != nil {
@@ -990,11 +1084,11 @@ func (e *Compress) MountIndexIntoFile() (err error) {
 
 // IndexToMemory
 //
-// English:
+// # English:
 //
 // Loads the indexes contained in the temporary file into memory.
 //
-// Português:
+// # Português:
 //
 // Carrega os índices contidos no arquivo temporário na memória.
 func (e *Compress) IndexToMemory() (err error) {
@@ -1039,11 +1133,11 @@ func (e *Compress) IndexToMemory() (err error) {
 
 // writeID
 //
-// English:
+// # English:
 //
 // Writes the node ID in binary format in the temporary file.
 //
-// Português:
+// # Português:
 //
 // Escreve o ID do node em formato binário no arquivo temporário.
 func (e *Compress) writeID(id int64) (err error) {
@@ -1058,11 +1152,11 @@ func (e *Compress) writeID(id int64) (err error) {
 
 // readID
 //
-// English:
+// # English:
 //
 // Reads node ID from temp file.
 //
-// Português:
+// # Português:
 //
 // Lê o ID do node no arquivo temporário.
 func (e *Compress) readID(nodeReadDataPosition int64) (id int64, err error) {
@@ -1077,11 +1171,11 @@ func (e *Compress) readID(nodeReadDataPosition int64) (id int64, err error) {
 
 // writeCoordinate
 //
-// English:
+// # English:
 //
 // Write the coordinate to the temporary file.
 //
-// Português:
+// # Português:
 //
 // Escreve a coordenada no arquivo temporário.
 func (e *Compress) writeCoordinate(coordinate float64) (err error) {
@@ -1105,11 +1199,11 @@ func (e *Compress) writeCoordinate(coordinate float64) (err error) {
 
 // readCoordinate
 //
-// English:
+// # English:
 //
 // Reads the coordinate from the temporary file.
 //
-// Português:
+// # Português:
 //
 // Lê a coordenada no arquivo temporário.
 func (e *Compress) readCoordinate(nodeReadDataPosition int64) (coordinate float64, err error) {
@@ -1137,11 +1231,11 @@ func (e *Compress) readCoordinate(nodeReadDataPosition int64) (coordinate float6
 
 // WriteFileHeaders
 //
-// English:
+// # English:
 //
 // Write configuration data at the beginning of the file.
 //
-// Português:
+// # Português:
 //
 // Escreve os dados de configuração no início do arquivo.
 func (e *Compress) WriteFileHeaders() (err error) {
@@ -1180,11 +1274,11 @@ func (e *Compress) WriteFileHeaders() (err error) {
 
 // ReadFileHeaders
 //
-// English:
+// # English:
 //
 // Read the configuration data at the beginning of the file.
 //
-// Português:
+// # Português:
 //
 // Lê os dados de configuração no início do arquivo.
 func (e *Compress) ReadFileHeaders() (err error) {
@@ -1223,11 +1317,11 @@ func (e *Compress) ReadFileHeaders() (err error) {
 
 // testVersionStringSize
 //
-// English:
+// # English:
 //
 // Test file version compatibility.
 //
-// Português:
+// # Português:
 //
 // Testa a compatibilidade da versão do arquivo.
 func (e *Compress) testVersionStringSize() (err error) {
@@ -1241,11 +1335,11 @@ func (e *Compress) testVersionStringSize() (err error) {
 
 // writeHeaderVersion
 //
-// English:
+// # English:
 //
 // # Write code version in config header
 //
-// Português:
+// # Português:
 //
 // Escreve a versão do código no cabeçalho de configuração
 func (e *Compress) writeHeaderVersion() (err error) {
@@ -1260,11 +1354,11 @@ func (e *Compress) writeHeaderVersion() (err error) {
 
 // readHeaderVersion
 //
-// English:
+// # English:
 //
 // # Read code version in config header
 //
-// Português:
+// # Português:
 //
 // Lê a versão do código no cabeçalho de configuração
 func (e *Compress) readHeaderVersion() (err error) {
@@ -1283,11 +1377,11 @@ func (e *Compress) readHeaderVersion() (err error) {
 
 // writeHeaderTotalNodes
 //
-// English:
+// # English:
 //
 // # Write the total number of nodes in the configuration header
 //
-// Português:
+// # Português:
 //
 // Escreve a quantidade total de nodes no cabeçalho de configuração
 func (e *Compress) writeHeaderTotalNodes() (err error) {
@@ -1298,11 +1392,11 @@ func (e *Compress) writeHeaderTotalNodes() (err error) {
 
 // readHeaderTotalNodes
 //
-// English:
+// # English:
 //
 // # Read the total number of nodes in the configuration header
 //
-// Português:
+// # Português:
 //
 // Lê a quantidade total de nodes no cabeçalho de configuração
 func (e *Compress) readHeaderTotalNodes() (err error) {
@@ -1317,11 +1411,11 @@ func (e *Compress) readHeaderTotalNodes() (err error) {
 
 // writeHeaderBlockSize
 //
-// English:
+// # English:
 //
 // # Writes block size of indexes in config header
 //
-// Português:
+// # Português:
 //
 // Escreve o tamanho do bloco de índices no cabeçalho de configuração
 func (e *Compress) writeHeaderBlockSize() (err error) {
@@ -1332,11 +1426,11 @@ func (e *Compress) writeHeaderBlockSize() (err error) {
 
 // readHeaderBlockSize
 //
-// English:
+// # English:
 //
 // # Reads block size of indices from config header
 //
-// Português:
+// # Português:
 //
 // Lê o tamanho do bloco de índices no cabeçalho de configuração
 func (e *Compress) readHeaderBlockSize() (err error) {
@@ -1351,11 +1445,11 @@ func (e *Compress) readHeaderBlockSize() (err error) {
 
 // writeHeaderTotalIndexIntoFile
 //
-// English:
+// # English:
 //
 // # Writes total indexes in configuration header
 //
-// Português:
+// # Português:
 //
 // Escreve o total de índices no cabeçalho de configuração
 func (e *Compress) writeHeaderTotalIndexIntoFile() (err error) {
@@ -1370,11 +1464,11 @@ func (e *Compress) writeHeaderTotalIndexIntoFile() (err error) {
 
 // readHeaderTotalIndexIntoFile
 //
-// English:
+// # English:
 //
 // # Read the total indexes in configuration header
 //
-// Português:
+// # Português:
 //
 // Lê o total de índices no cabeçalho de configuração
 func (e *Compress) readHeaderTotalIndexIntoFile() (err error) {
@@ -1389,11 +1483,11 @@ func (e *Compress) readHeaderTotalIndexIntoFile() (err error) {
 
 // writeHeaderIndexesAddress
 //
-// English:
+// # English:
 //
 // # Write the address of the indexes in the configuration header
 //
-// Português:
+// # Português:
 //
 // Escreve o endereço dos índices no cabeçalho de configuração
 func (e *Compress) writeHeaderIndexesAddress() (err error) {
@@ -1404,11 +1498,11 @@ func (e *Compress) writeHeaderIndexesAddress() (err error) {
 
 // readHeaderIndexesAddress
 //
-// English:
+// # English:
 //
 // # Reads address of indexes in the configuration header
 //
-// Português:
+// # Português:
 //
 // Lê o endereço dos índices no cabeçalho de configuração
 func (e *Compress) readHeaderIndexesAddress() (err error) {

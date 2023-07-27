@@ -1,7 +1,9 @@
 package util
 
 import (
+	"errors"
 	"math"
+	"os"
 )
 
 func DegreesToRadians(a float64) float64 { return math.Pi * a / 180.0 }
@@ -36,4 +38,56 @@ func Equal(pointA, pointB [2]float64) (equal bool) {
 	}
 
 	return true
+}
+
+// ChangeRootDir
+//
+// # English:
+//
+// It looks for the directory defined in dirToSearch and if it doesn't find it, it goes up the main directory one level
+//
+//	Input:
+//	  dirToSearch: name of the directory where to save the downloaded and processed files
+//
+// # Português:
+//
+// Procura pelo diretório definido em dirToSearch e caso não encontre, sobe o diretório principal em um nível
+//
+//	Entrada:
+//	  dirToSearch: nome do diretório onde salvar os arquivos baixados e processados
+func ChangeRootDir(dirToSearch string) (err error) {
+	// change main dir to open 'commonFiles' folder
+	var dir []os.DirEntry
+	var safetyCounter = 5
+	for {
+		pass := false
+		dir, err = os.ReadDir("./")
+		if err != nil {
+			return
+		}
+
+		for k := range dir {
+			if dir[k].Name() == dirToSearch {
+				pass = true
+				break
+			}
+		}
+
+		if pass {
+			break
+		}
+
+		err = os.Chdir("../")
+		if err != nil {
+			return
+		}
+
+		safetyCounter -= 1
+		if safetyCounter == 0 {
+			err = errors.New("for security reasons, the limit is five fetch interactions")
+			return
+		}
+	}
+
+	return
 }

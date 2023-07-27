@@ -97,8 +97,6 @@ func TestCompress(t *testing.T) {
 	}
 
 	for i := 0; i != testLimit; i++ {
-		compress.totalOfNodesInTmpFile++
-
 		err = compress.WriteNode(nodeList[i].ID, nodeList[i].Lon, nodeList[i].Lat)
 		if err != nil {
 			t.Logf("write node error: %v", err)
