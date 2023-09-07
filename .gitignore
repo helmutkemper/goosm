@@ -25,3 +25,5 @@ docker/mongodb/data/
 
 # CSV files
 *.csv
+
+*.bin
